@@ -42,6 +42,8 @@ class LinksScreen extends React.Component {
     this.state = { companies: [], loading: true ,pressing:false};
   }
   render() {
+    const {navigate} = this.props.navigation;
+
     return (
       <ScrollView
       refreshControl={
@@ -57,8 +59,6 @@ class LinksScreen extends React.Component {
         {this.state.companies.map((l, i) => (
           <TouchableHighlight
       
-            // onPress={this._onPressButton}
-            onLongPress={this._onLongPressButton}
           >
             <ListItem
               key={i}
