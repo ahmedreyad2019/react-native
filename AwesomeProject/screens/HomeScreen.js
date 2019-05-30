@@ -1,9 +1,7 @@
 import React from "react";
 import {
   TextInput,
-  Button,
   KeyboardAvoidingView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View
@@ -12,79 +10,82 @@ import {
 const styles = {
   text: {
     height: 60,
-    backgroundColor: "#D5EAFA",
+    backgroundColor: "#F4F3EA",
     borderStyle: "solid",
-    borderColor: "#D5EAFA",
-    borderWidth: "1",
-    borderRadius: "30px",
-    padding: 18,
-    marginBottom: 30,
-  },
-  button:{
-    alignItems: 'center',
-    height: 50,
-    backgroundColor: "#1B79F3",
-    borderStyle: "solid",
-    borderColor: "#1B79F3",
-    borderWidth: "1",
-    borderRadius: "30px",
+    borderColor: "#CBD0D8",
+    borderWidth: "2",
+    borderRadius: "5px",
     padding: 15,
     marginBottom: 30,
+    fontSize: 20,
+    color:'#333D51'
+  },
+  button: {
+    alignItems: "center",
+    height: 50,
+    backgroundColor: "#D3AC2b",
+    borderStyle: "solid",
+    borderColor: "#D3AC2b",
+    borderWidth: "1",
+    borderRadius: "10px",
+    padding: 15,
+    marginBottom: 30
   }
 };
 
 export default class HomeScreen extends React.Component {
-  
   constructor(props) {
     super(props);
-    this.state = { email:'',password:'' ,c:true,loggedin:false};
+    this.state = {
+      email: "",
+      password: "",
+      c: true,
+      loggedin: false,
+      token: ""
+    };
   }
-  handleEmail=(event)=>{
-    this.setState({email:event})
-  }
-  handlePassword=(event)=>{
-    this.setState({password:event})
-  }  
-  handleSubmit=()=>{
-    const {navigate} = this.props.navigation;
+  handleEmail = event => {
+    this.setState({ email: event });
+  };
+  handlePassword = event => {
+    this.setState({ password: event });
+  };
+  handleSubmit = () => {
+    const { navigate } = this.props.navigation;
 
-    console.log(this.state)
-    fetch('https://serverbrogrammers.herokuapp.com/api/investors/login', {
-      method: 'POST',
+    fetch("https://serverbrogrammers.herokuapp.com/api/investors/login", {
+      method: "POST",
       body: JSON.stringify(this.state),
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json"
       }
     }).then(response => {
       response.json().then(data => {
         if (data.auth) {
-          this.setState(
-            {
-             loggedin:true
-            }
-          )
-          console.log('success')
-           navigate('Profile')
-        } 
-      })
-    })
-  }
+          this.setState({
+            loggedin: true,
+            token: data.token
+          });
+          console.log("success");
+          navigate("Profile",{token:data.token,id:data.id});
+        }
+      });
+    });
+  };
 
-
-  
   render() {
     return (
-        <View
-          style={{
-            backgroundColor: "#14598D",
-            flex: 1,
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "stretch",
-            padding:30
-          }}
-        >
-      <KeyboardAvoidingView behavior="padding" enabled>
+      <View
+        style={{
+          backgroundColor: "#333D51",
+          flex: 1,
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "stretch",
+          padding: 30
+        }}
+      >
+        <KeyboardAvoidingView behavior="padding" enabled>
           <View>
             <TextInput
               style={styles.text}
@@ -101,16 +102,13 @@ export default class HomeScreen extends React.Component {
               onChange={this.handlePassword}
             />
           </View>
-          <View style={{paddingHorizontal:60}}>
-          <TouchableOpacity
-         style={styles.button}
-         onPress={this.handleSubmit}
-       >
-         <Text style={{color:'white'}}> Sign in </Text>
-       </TouchableOpacity>
+          <View style={{ paddingHorizontal: 60 }}>
+            <TouchableOpacity style={styles.button} onPress={this.handleSubmit}>
+              <Text style={{ color: "#333D51" }}> Sign in </Text>
+            </TouchableOpacity>
           </View>
-      </KeyboardAvoidingView>
-        </View>
+        </KeyboardAvoidingView>
+      </View>
     );
   }
 }
