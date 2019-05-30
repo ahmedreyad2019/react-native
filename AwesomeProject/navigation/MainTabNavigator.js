@@ -7,7 +7,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 const MainNavigator = createStackNavigator({
   Home: {screen: HomeScreen},
   Profile: {screen: ProfileScreen},
-},{mode:'modal'});
+},{mode:'card'});
 
 const App = createAppContainer(MainNavigator);
 

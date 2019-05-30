@@ -29,7 +29,9 @@ const styles = {
     borderWidth: "1",
     borderRadius: "10px",
     padding: 15,
-    marginBottom: 30
+    fontSize: 15,
+    marginBottom: 10,
+    marginHorizzontal:40
   }
 };
 
@@ -41,7 +43,7 @@ export default class HomeScreen extends React.Component {
       password: "",
       c: true,
       loggedin: false,
-      token: ""
+      token: "",error:false
     };
   }
   handleEmail = event => {
@@ -65,9 +67,15 @@ export default class HomeScreen extends React.Component {
           this.setState({
             loggedin: true,
             token: data.token
+            ,error:false
           });
           console.log("success");
           navigate("Profile",{token:data.token,id:data.id});
+        }
+        else{
+          this.setState({
+            error:true
+          })
         }
       });
     });
@@ -75,17 +83,15 @@ export default class HomeScreen extends React.Component {
 
   render() {
     return (
-      <View
-        style={{
+     
+        <KeyboardAvoidingView   style={{
           backgroundColor: "#333D51",
           flex: 1,
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "stretch",
           padding: 30
-        }}
-      >
-        <KeyboardAvoidingView behavior="padding" enabled>
+        }}behavior="padding" enabled>
           <View>
             <TextInput
               style={styles.text}
@@ -107,8 +113,12 @@ export default class HomeScreen extends React.Component {
               <Text style={{ color: "#333D51" }}> Sign in </Text>
             </TouchableOpacity>
           </View>
+            <TouchableOpacity  onPress={this.handleSubmit}>
+              <Text style={{ color: "#CBD0D8" }}>if you do not have an account, register here</Text>
+            </TouchableOpacity>
+
         </KeyboardAvoidingView>
-      </View>
+    
     );
   }
 }
