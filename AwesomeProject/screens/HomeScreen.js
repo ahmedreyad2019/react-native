@@ -13,12 +13,12 @@ const styles = {
     backgroundColor: "#F4F3EA",
     borderStyle: "solid",
     borderColor: "#CBD0D8",
-    borderWidth: "2",
-    borderRadius: "5px",
+    borderWidth: 2,
+    borderRadius: 5,
     padding: 15,
     marginBottom: 30,
     fontSize: 20,
-    color:'#333D51'
+    color: "#333D51"
   },
   button: {
     alignItems: "center",
@@ -27,11 +27,11 @@ const styles = {
     borderStyle: "solid",
     borderColor: "#D3AC2b",
     borderWidth: "1",
-    borderRadius: "10px",
+    borderRadius: 10,
     padding: 15,
     fontSize: 15,
     marginBottom: 10,
-    marginHorizzontal:40
+    marginHorizzontal: 40
   }
 };
 
@@ -43,7 +43,8 @@ export default class HomeScreen extends React.Component {
       password: "",
       c: true,
       loggedin: false,
-      token: "",error:false
+      token: "",
+      error: false
     };
   }
   handleEmail = event => {
@@ -51,6 +52,11 @@ export default class HomeScreen extends React.Component {
   };
   handlePassword = event => {
     this.setState({ password: event });
+  };
+  handleRegister = () => {
+    const { navigate } = this.props.navigation;
+    navigate("Register", { token: "l" });
+    console.log('aaaaa')
   };
   handleSubmit = () => {
     const { navigate } = this.props.navigation;
@@ -66,16 +72,15 @@ export default class HomeScreen extends React.Component {
         if (data.auth) {
           this.setState({
             loggedin: true,
-            token: data.token
-            ,error:false
+            token: data.token,
+            error: false
           });
           console.log("success");
-          navigate("Profile",{token:data.token,id:data.id});
-        }
-        else{
+          navigate("Profile", { token: data.token, id: data.id });
+        } else {
           this.setState({
-            error:true
-          })
+            error: true
+          });
         }
       });
     });
@@ -83,42 +88,45 @@ export default class HomeScreen extends React.Component {
 
   render() {
     return (
-     
-        <KeyboardAvoidingView   style={{
+      <KeyboardAvoidingView
+        style={{
           backgroundColor: "#333D51",
           flex: 1,
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "stretch",
           padding: 30
-        }}behavior="padding" enabled>
-          <View>
-            <TextInput
-              style={styles.text}
-              placeholder="Email"
-              onChangeText={text => this.handleEmail(text)}
-              keyboardType="email-address"
-            />
-            <TextInput
-              style={styles.text}
-              placeholder="Password"
-              onChangeText={text => this.handlePassword(text)}
-              textContentType="password"
-              secureTextEntry="true"
-              onChange={this.handlePassword}
-            />
-          </View>
-          <View style={{ paddingHorizontal: 60 }}>
-            <TouchableOpacity style={styles.button} onPress={this.handleSubmit}>
-              <Text style={{ color: "#333D51" }}> Sign in </Text>
-            </TouchableOpacity>
-          </View>
-            <TouchableOpacity  onPress={this.handleSubmit}>
-              <Text style={{ color: "#CBD0D8" }}>if you do not have an account, register here</Text>
-            </TouchableOpacity>
-
-        </KeyboardAvoidingView>
-    
+        }}
+        behavior="padding"
+        enabled
+      >
+        <View>
+          <TextInput
+            style={styles.text}
+            placeholder="Email"
+            onChangeText={text => this.handleEmail(text)}
+            keyboardType="email-address"
+          />
+          <TextInput
+            style={styles.text}
+            placeholder="Password"
+            onChangeText={text => this.handlePassword(text)}
+            textContentType="password"
+            secureTextEntry={true}
+            onChange={this.handlePassword}
+          />
+        </View>
+        <View style={{ paddingHorizontal: 60 }}>
+          <TouchableOpacity style={styles.button} onPress={this.handleSubmit}>
+            <Text style={{ color: "#333D51" }}> Sign in </Text>
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity onPress={this.handleRegister}>
+          <Text style={{ color: "#CBD0D8" }}>
+            if you do not have an account, register here
+          </Text>
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
     );
   }
 }
