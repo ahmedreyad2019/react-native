@@ -77,7 +77,7 @@ class RegisterScreen extends React.Component {
     return (
       <KeyboardAvoidingView
         style={{
-          backgroundColor: "#333D51",
+          backgroundColor: "white",
           flex: 1,
           justifyContent: "space-between",
           padding: 30

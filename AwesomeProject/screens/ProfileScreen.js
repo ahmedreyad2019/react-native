@@ -4,49 +4,70 @@ import {
   FlatList,
   Alert,
   ActivityIndicator,
+  KeyboardAvoidingView,
   RefreshControl,
   Text,
   StatusBar,
-  View
+  View,
+  TouchableOpacity
 } from "react-native";
+import { Header } from "react-native-elements";
+/*
+-sign in
+--sign up
+--dashboard
+---home-->electronic journal
+---profile-->view profile,edit profile,sign out
+---companies-->view requests,view companies,create
+---settings
 
+
+
+
+*/
 const styles = {
-  profile: {
-    padding: 20,
-    backgroundColor: "white",
-    borderColor: "#EBB62B",
-    borderRadius: "10px",
-    borderWidth: "1",
-    shadowColor: "#000",
-
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    marginHorizontal: 20,
-    marginVertical: 20
-  },
   avatar: {
-    borderColor: "#E91A58",
-    borderRadius: "20px",
+    borderColor: "#E4C914",
+    borderRadius: "14px",
     borderWidth: "1",
-    width: 80,
-    height: 80,
-    backgroundColor: "#E91A58",
+    width: 85,
+    height: 85,
+    backgroundColor: "#303655",
     padding: 5,
     justifyContent: "center",
     alignItems: "center"
   },
   container: {
     padding: 20,
-    backgroundColor: "#333D51",
-    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "flex-start"
+  },
+  container2: {
     flexDirection: "column",
-    justifyContent: "flex-start",
-    alignItems: "stretch"
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 20
+  },
+  button: {
+    alignItems: "center",
+    height: 52,
+    backgroundColor: "#FFFFFF",
+    borderStyle: "solid",
+    borderColor: "#FF2525",
+    borderWidth: "1",
+    padding: 15,
+    fontSize: 15,
+    marginBottom: 10,
+    marginHorizzontal: 40,
+    color: "#DBA73F"
   }
 };
 class LinksScreen extends React.Component {
   componentDidMount() {
     this.makeRemoteRequest();
+  }
+  makeRemoteRequest = () => {
     const { navigation } = this.props;
     const itemId = navigation.getParam("id", "NO-ID");
     const otherParam = navigation.getParam("token", "some default value");
@@ -62,36 +83,27 @@ class LinksScreen extends React.Component {
         this.setState({
           investor: response.data,
           loading: false,
-          refreshing: false
+          refresh: false,
+          date: new Date(response.data.dob).toLocaleDateString("en-US")
         });
       })
       .catch(error => {
         console.log(error);
       })
       .finally(() => {});
-  }
-  makeRemoteRequest = () => {
-    this.setState({ refresh: true });
-    fetch("http://serverbrogrammers.herokuapp.com/api/company", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-      .then(response => response.json())
-      .then(response => {
-        this.setState({ data: response.data, refresh: false });
-      })
-      .catch(error => {
-        this.setState({ error });
-      })
-      .finally(() => {
-        console.log(this.state.data[0]._id);
-      });
+  };
+  handleSignOut = () => {
+    this.props.navigation.navigate("Home");
   };
   constructor(props) {
     super(props);
-    this.state = { investor: null, loading: true, refresh: false, data: [] };
+    this.state = {
+      date: null,
+      investor: null,
+      loading: true,
+      refresh: false,
+      data: []
+    };
   }
   _onRefresh = () => {
     this.makeRemoteRequest();
@@ -99,76 +111,71 @@ class LinksScreen extends React.Component {
 
   render() {
     return (
-      <ScrollView
-        contentContainerStyle={{
-          backgroundColor: "#333D51",
-          flex: 1,
-          flexDirection: "column",
-          justifyContent: "center",
-          padding: 30
-        }}
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.refreshing}
-            onRefresh={this._onRefresh}
-          />
-        }
-      >
-        {this.state.investor != null ? (
-          <>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "center",
-                alignItems: "stretch",
-                marginTop: 20
-              }}
-            >
-              <View style={styles.avatar}>
-                <Text style={{ fontSize: 30 }}>
-                  {this.state.investor.name.split(" ")[0].substring(0, 1) +
-                    this.state.investor.name
-                      .split(" ")
-                      [
-                        this.state.investor.name.split(" ").length - 1
-                      ].substring(0, 1)}
-                </Text>
-              </View>
-            </View>
-            <Text> {this.state.investor.name}</Text>
-            <Text> {this.state.investor.mail}</Text>
-            <Text> {this.state.investor.dob}</Text>
-            <Text> {this.state.investor.idNumber}</Text>
-            <Text> {this.state.investor.idType}</Text>
-            <Text> {this.state.investor.address}</Text>
-            <Text> {this.state.investor.fax}</Text>
-          </>
-        ) : (
-          console.log("hi")
-        )}
-        <View
-          style={{
-            borderBottomColor: "black",
-            borderBottomWidth: 1
+      <>
+        <Header
+          backgroundColor={"#fff"}
+          centerComponent={{
+            text: "Profile",
+            style: { color: "black", fontWeight: "bold", fontSize: 20 }
           }}
         />
-        <View>
-          <FlatList
-            horizontal
-            data={this.state.data}
-            renderItem={({ item }) => (
-              <View style={styles.profile}>
-                <Text>{item.nameInArabic}</Text>
-                <Text>{item.nameInEnglish}</Text>
-                <Text>{item.investorEmail}</Text>
-              </View>
-            )}
-            keyExtractor={item => {
-              return item._id;
-            }}
-          />
+  <ActivityIndicator
+          animating={this.state.loading}
+          size="small"
+          color={"#303655"}
+        />
+        <View style={styles.container}>
+          <View style={styles.avatar}>
+            <Text
+              style={{ fontSize: 31, fontWeight: "bold", color: "#DBA73F" }}
+            >
+              {this.state.investor
+                ? this.state.investor.name.split(" ")[0].substring(0, 1) +
+                  this.state.investor.name
+                    .split(" ")
+                    [this.state.investor.name.split(" ").length - 1].substring(
+                      0,
+                      1
+                    )
+                : console.log()}
+            </Text>
+          </View>
         </View>
-      </ScrollView>
+        {this.state.investor ? (
+          <View style={styles.container2}>
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: "bold"
+              }}
+            >
+              {this.state.investor.name}
+            </Text>
+            <View>
+              <Text style={{ fontSize: 20 }}>
+                Email:{this.state.investor.mail}
+              </Text>
+              <Text style={{ fontSize: 20 }}>Birthdate: {this.state.date}</Text>
+              <Text style={{ fontSize: 20 }}>
+                ID: {this.state.investor.idNumber}
+              </Text>
+              <Text style={{ fontSize: 20 }}>
+                Address: {this.state.investor.address}
+              </Text>
+              <Text style={{ fontSize: 20 }}>
+                Fax: {this.state.investor.fax}
+              </Text>
+            </View>
+          </View>
+        ) : (
+          console.log()
+        )}
+        <View style={{ paddingHorizontal: 60 }}>
+          <TouchableOpacity style={styles.button} onPress={this.handleSignOut}>
+            <Text style={{ color: "#FF2525" }}> Sign Out </Text>
+          </TouchableOpacity>
+        </View>
+      </>
     );
   }
 }
