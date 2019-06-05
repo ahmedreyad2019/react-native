@@ -12,7 +12,6 @@ import CompaniesScreen from "../screens/CompaniesScreen";
 const DashboardTabNavigator = createBottomTabNavigator(
   {
     FeedScreen,
-    RegisterScreen,
     CompaniesScreen,
     ProfileScreen
   },

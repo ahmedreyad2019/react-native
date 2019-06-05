@@ -11,30 +11,29 @@ import {
 
 const styles = {
   text: {
-    height: 50,
-    backgroundColor: "#F4F3EA",
+    height: 47,
+    backgroundColor: "#FFFEF7",
     borderStyle: "solid",
-    borderColor: "#CBD0D8",
-    borderWidth: 2,
-    borderRadius: 5,
-    padding: 15,
+    borderColor: "#4A427B",
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 10,
     fontSize: 20,
-    color: "#333D51",
-    marginBottom: 10
+    color: "#333D51"
   },
   button: {
     alignItems: "center",
-    height: 50,
-    backgroundColor: "#D3AC2b",
+    height: 52,
+    backgroundColor: "#303655",
     borderStyle: "solid",
-    borderColor: "#D3AC2b",
-    borderWidth: 1,
-    borderRadius: 10,
+    borderColor: "#DBA73F",
+    borderWidth: "1",
     padding: 15,
     fontSize: 15,
     marginBottom: 10,
-    marginHorizzontal: 40
-  }
+    marginHorizzontal: 40,
+    color: "#DBA73F"
+  },
 };
 
 class RegisterScreen extends React.Component {
@@ -69,6 +68,7 @@ class RegisterScreen extends React.Component {
   };
   handleSubmit = () => {
     console.log(this.state);
+    
   };
 
 
@@ -128,7 +128,7 @@ class RegisterScreen extends React.Component {
 
         <View style={{ paddingHorizontal: 60 }}>
           <TouchableOpacity style={styles.button} onPress={this.handleSubmit}>
-            <Text style={{ color: "#333D51" }}> Sign in </Text>
+            <Text style={{ color: "#DBA73F" }}> Sign up </Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>

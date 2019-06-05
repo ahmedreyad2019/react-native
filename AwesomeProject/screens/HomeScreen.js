@@ -5,9 +5,11 @@ import {
   Text,
   TouchableOpacity,
   View,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
-
+import robot from "../assets/images/robot-dev.png";
+import { Icon } from "react-native-elements";
+const robots = robot;
 const styles = {
   text: {
     height: 47,
@@ -96,7 +98,7 @@ export default class HomeScreen extends React.Component {
         } else {
           this.setState({
             error: true,
-            loading:false
+            loading: false
           });
         }
       });
@@ -144,12 +146,14 @@ export default class HomeScreen extends React.Component {
         enabled
       >
         <View>
-          <TextInput
-            style={styles.text}
-            placeholder="Email"
-            onChangeText={text => this.handleEmail(text)}
-            keyboardType="email-address"
-          />
+          
+            <TextInput
+              style={styles.text}
+              placeholder="Email"
+              onChangeText={text => this.handleEmail(text)}
+              keyboardType="email-address"
+            />
+         
           <TextInput
             style={styles.text}
             placeholder="Password"

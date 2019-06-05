@@ -36,7 +36,6 @@ class FeedScreen extends React.Component {
     this.makeRemoteRequest();
   }
   makeRemoteRequest = () => {
-    this.setState({ loading: true });
     fetch("http://serverbrogrammers.herokuapp.com/api/company", {
       method: "GET",
       headers: {
@@ -56,7 +55,7 @@ class FeedScreen extends React.Component {
   };
   constructor(props) {
     super(props);
-    this.state = { investor: null, loading: false, refresh: false, data: [] };
+    this.state = { investor: null, loading: true, refresh: false, data: [] };
   }
   _onRefresh = () => {
     this.makeRemoteRequest();
@@ -69,6 +68,11 @@ class FeedScreen extends React.Component {
       backgroundColor={'#fff'}
         centerComponent={{ text: "Home", style: { color: "black",fontWeight:'bold',fontSize:20 } }}
       />
+      <ActivityIndicator
+          animating={this.state.loading}
+          size="small"
+          color={"#303655"}
+        />
       <ScrollView
         contentContainerStyle={{
           flex: 1,
