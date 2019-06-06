@@ -45,7 +45,7 @@ const styles = {
   },
   container2: {
     flexDirection: "column",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "center",
     marginBottom: 20
   },
@@ -93,7 +93,7 @@ class LinksScreen extends React.Component {
       .finally(() => {});
   };
   handleSignOut = () => {
-    this.props.navigation.navigate("Home");
+    this.props.navigation.navigate("Home",{'token':null});
   };
   constructor(props) {
     super(props);

@@ -9,7 +9,7 @@ import {
   RefreshControl,
   ScrollView
 } from "react-native";
-import { Header } from "react-native-elements";
+import { Header, SearchBar } from "react-native-elements";
 const styles = {
   profile: {
     padding: 20,
@@ -33,7 +33,15 @@ const styles = {
 class CompaniesScreen extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { selectedIndex: 0, data: [], data2: [], loading: false };
+    this.state = {
+      selectedIndex: 0,
+      data: [],
+      data2: [],
+      loading: false,
+      order: "asc",
+      selectedKey: "nameInEnglish",
+      search: ""
+    };
   }
   componentDidMount = () => {
     this.fetchRequests();
@@ -68,6 +76,9 @@ class CompaniesScreen extends React.Component {
         console.log(error);
       })
       .finally(() => {});
+  };
+  updateSearch = search => {
+    this.setState({ search });
   };
   fetchRequests2 = () => {
     const { navigation } = this.props;
@@ -179,21 +190,39 @@ class CompaniesScreen extends React.Component {
   };
   handleSort = () => {
     this.setState(prevState => {
-      return {
-        data: prevState.data.sort(this.compare),
-        data2: prevState.data2.sort(this.compare)
-      };
+      if (this.state.selectedIndex === 0)
+        return {
+          data: prevState.data.sort(
+            this.compare(this.state.selectedKey, this.state.order)
+          ),
+          order: prevState.order === "asc" ? "desc" : "asc"
+        };
+      else if (this.state.selectedIndex === 1)
+        return {
+          data2: prevState.data2.sort(
+            this.compare(this.state.selectedKey, this.state.order)
+          ),
+          order: prevState.order === "asc" ? "desc" : "asc"
+        };
     });
   };
-  compare = (item1, item2) => {
-    let att1 = item1.nameInEnglish.toUpperCase();
-    let att2 = item2.nameInEnglish.toUpperCase();
-    let comp = 0;
-    if (att1 > att2) comp = 1;
-    else if (att2 > att1) comp = -1;
-    return comp;
+  compare = (key, order = "asc") => {
+    return function(item1, item2) {
+      if (!item1.hasOwnProperty(key) || !item2.hasOwnProperty(key)) {
+        return 0;
+      }
+      let att1 =
+        typeof item1[key] === "string" ? item1[key].toUpperCase() : item1[key];
+      let att2 =
+        typeof item2[key] === "string" ? item2[key].toUpperCase() : item2[key];
+      let comp = 0;
+      if (att1 > att2) comp = 1;
+      else if (att2 > att1) comp = -1;
+      return order == "desc" ? comp * -1 : comp;
+    };
   };
   render() {
+    const { search } = this.state;
     return (
       <>
         <Header
@@ -213,18 +242,18 @@ class CompaniesScreen extends React.Component {
           }}
           tintColor={"#303655"}
         />
+        <SearchBar
+          containerStyle={{ backgroundColor: "white" }}
+          platform="ios"
+          placeholder="Type Here..."
+          onChangeText={this.updateSearch}
+          value={search}
+        />
         <View
           style={{
             backgroundColor: "white",
-            shadowColor: "#000",
-            shadowOffset: {
-              width: 0,
-              height: 1
-            },
-            shadowOpacity: 0.18,
-            shadowRadius: 1.0,
-
-            elevation: 1,
+            borderBottomColor: "#eeeeee",
+            borderBottomWidth: "0.5",
             height: 30
           }}
         >
