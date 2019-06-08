@@ -11,26 +11,7 @@ import {
   View
 } from "react-native";
 import { Header } from "react-native-elements";
-const styles = {
-  profile: {
-    padding: 20,
-    backgroundColor: "#303655",
-    borderColor: "#DBA73F",
-    borderRadius: "33px",
-    borderWidth: "3",
-    shadowColor: "#000",
-    width: 240,
-    height: 267,
-    shadowOpacity: 0.4,
-    shadowRadius: 3,
-    shadoOffset: {
-      height: 3
-    },
-    marginHorizontal: 20,
-    marginVertical: 20,
-    flex: 1
-  }
-};
+import {styles} from "../styles";
 class FeedScreen extends React.Component {
   componentDidMount() {
     this.makeRemoteRequest();
@@ -64,84 +45,89 @@ class FeedScreen extends React.Component {
   render() {
     return (
       <>
-      <Header
-      backgroundColor={'#fff'}
-        centerComponent={{ text: "Home", style: { color: "black",fontWeight:'bold',fontSize:20 } }}
-      />
-      <ActivityIndicator
+        <Header
+          backgroundColor={"#fff"}
+          centerComponent={{
+            text: "Home",
+            style: { color: "black", fontWeight: "bold", fontSize: 20 }
+          }}
+        />
+        <ActivityIndicator
           animating={this.state.loading}
           size="small"
           color={"#303655"}
         />
-      <ScrollView
-        contentContainerStyle={{
-          flex: 1,
-          flexDirection: "column",
-          justifyContent: "center"
-        }}
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.refresh}
-            onRefresh={this._onRefresh}
-          />
-        }
-      >
-        <View>
-          <Text style={{ fontSize: 29, fontWeight: "bold", color: "#303655" }}>
-            Electronic Journal
-          </Text>
-        </View>
+        <ScrollView
+          contentContainerStyle={{
+            flex: 1,
+            flexDirection: "column",
+            justifyContent: "center"
+          }}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refresh}
+              onRefresh={this._onRefresh}
+            />
+          }
+        >
+          <View>
+            <Text
+              style={{ fontSize: 29, fontWeight: "bold", color: "#303655" }}
+            >
+              Electronic Journal
+            </Text>
+          </View>
 
-        <View>
-          <FlatList
-            horizontal
-            data={this.state.data}
-            renderItem={({ item }) => (
-              <View style={styles.profile}>
-                <Text
-                  style={{
-                    color: "#DBA73F",
-                    fontWeight: "bold",
-                    fontSize: 23
-                  }}
-                >
-                  {item.nameInEnglish}
-                </Text>
-                <Text
-                  style={{
-                    color: "#8F856B",
-                    fontWeight: "bold",
-                    fontSize: 16
-                  }}
-                >
-                  {item.nameInArabic}
-                </Text>
-                <Text
-                  style={{
-                    color: "#CCCCCC",
-                    fontWeight: "bold",
-                    fontSize: 67
-                  }}
-                >
-                  {item.legalCompanyForm}
-                </Text>
-                <TouchableOpacity
-                  style={{
-                    flex: 1,
-                    justifyContent: "flex-end",
-                    marginBottom: 36
-                  }}
-                >
-                  <Text style={{ color: "#CCCCCC" }}>View details</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-            keyExtractor={item => {
-              return item._id;
-            }}
-          />
-        </View>
-      </ScrollView>
+          <View>
+            <FlatList
+              horizontal
+              data={this.state.data}
+              renderItem={({ item }) => (
+                <View style={styles.profile}>
+                  <Text
+                    style={{
+                      color: "#DBA73F",
+                      fontWeight: "bold",
+                      fontSize: 23
+                    }}
+                  >
+                    {item.nameInEnglish}
+                  </Text>
+                  <Text
+                    style={{
+                      color: "#8F856B",
+                      fontWeight: "bold",
+                      fontSize: 16
+                    }}
+                  >
+                    {item.nameInArabic}
+                  </Text>
+                  <Text
+                    style={{
+                      color: "#CCCCCC",
+                      fontWeight: "bold",
+                      fontSize: 67
+                    }}
+                  >
+                    {item.legalCompanyForm}
+                  </Text>
+                  <TouchableOpacity
+                    style={{
+                      flex: 1,
+                      justifyContent: "flex-end",
+                      marginBottom: 36
+                    }}
+                  >
+                    <Text style={{ color: "#CCCCCC" }}>View details</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+              keyExtractor={item => {
+                return item._id;
+              }}
+            />
+          </View>
+        </ScrollView>
       </>
     );
   }

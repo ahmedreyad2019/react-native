@@ -1,99 +1,20 @@
 import React from "react";
-import {
-  ScrollView,
-  FlatList,
-  Alert,
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  RefreshControl,
-  Text,
-  StatusBar,
-  View,
-  TouchableOpacity
-} from "react-native";
+import { ActivityIndicator, Text, View, TouchableOpacity } from "react-native";
 import { Header } from "react-native-elements";
-/*
--sign in
---sign up
---dashboard
----home-->electronic journal
----profile-->view profile,edit profile,sign out
----companies-->view requests,view companies,create
----settings
+import { connect } from "react-redux";
+import { styles } from "../styles";
+import * as actions from "../actions/index";
 
-
-
-
-*/
-const styles = {
-  avatar: {
-    borderColor: "#E4C914",
-    borderRadius: "14px",
-    borderWidth: "1",
-    width: 85,
-    height: 85,
-    backgroundColor: "#303655",
-    padding: 5,
-    justifyContent: "center",
-    alignItems: "center"
-  },
-  container: {
-    padding: 20,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "flex-start"
-  },
-  container2: {
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    marginBottom: 20
-  },
-  button: {
-    alignItems: "center",
-    height: 52,
-    backgroundColor: "#FFFFFF",
-    borderStyle: "solid",
-    borderColor: "#FF2525",
-    borderWidth: "1",
-    padding: 15,
-    fontSize: 15,
-    marginBottom: 10,
-    marginHorizzontal: 40,
-    color: "#DBA73F"
-  }
-};
 class LinksScreen extends React.Component {
   componentDidMount() {
     this.makeRemoteRequest();
   }
   makeRemoteRequest = () => {
-    const { navigation } = this.props;
-    const itemId = navigation.getParam("id", "NO-ID");
-    const otherParam = navigation.getParam("token", "some default value");
-    fetch(`http://serverbrogrammers.herokuapp.com/api/investors/${itemId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "x-access-token": otherParam
-      }
-    })
-      .then(response => response.json())
-      .then(response => {
-        this.setState({
-          investor: response.data,
-          loading: false,
-          refresh: false,
-          date: new Date(response.data.dob).toLocaleDateString("en-US")
-        });
-      })
-      .catch(error => {
-        console.log(error);
-      })
-      .finally(() => {});
+    const {userId,token}=this.props
+   this.props.doFetch(userId,token)
   };
   handleSignOut = () => {
-    this.props.navigation.navigate("Home",{'token':null});
+    this.props.navigation.navigate("Home");
   };
   constructor(props) {
     super(props);
@@ -110,6 +31,7 @@ class LinksScreen extends React.Component {
   };
 
   render() {
+    const {user}=this.props
     return (
       <>
         <Header
@@ -119,8 +41,8 @@ class LinksScreen extends React.Component {
             style: { color: "black", fontWeight: "bold", fontSize: 20 }
           }}
         />
-  <ActivityIndicator
-          animating={this.state.loading}
+        <ActivityIndicator
+          animating={this.props.loading}
           size="small"
           color={"#303655"}
         />
@@ -129,11 +51,11 @@ class LinksScreen extends React.Component {
             <Text
               style={{ fontSize: 31, fontWeight: "bold", color: "#DBA73F" }}
             >
-              {this.state.investor
-                ? this.state.investor.name.split(" ")[0].substring(0, 1) +
-                  this.state.investor.name
+              {user
+                ? user.name.split(" ")[0].substring(0, 1) +
+                  user.name
                     .split(" ")
-                    [this.state.investor.name.split(" ").length - 1].substring(
+                    [user.name.split(" ").length - 1].substring(
                       0,
                       1
                     )
@@ -141,7 +63,7 @@ class LinksScreen extends React.Component {
             </Text>
           </View>
         </View>
-        {this.state.investor ? (
+        {user ? (
           <View style={styles.container2}>
             <Text
               style={{
@@ -149,21 +71,21 @@ class LinksScreen extends React.Component {
                 fontWeight: "bold"
               }}
             >
-              {this.state.investor.name}
+              {user.name}
             </Text>
             <View>
               <Text style={{ fontSize: 20 }}>
-                Email:{this.state.investor.mail}
+                Email:{user.mail}
               </Text>
-              <Text style={{ fontSize: 20 }}>Birthdate: {this.state.date}</Text>
+              <Text style={{ fontSize: 20 }}>Birthdate: {new Date(user.dob).toLocaleDateString("en-US")}</Text>
               <Text style={{ fontSize: 20 }}>
-                ID: {this.state.investor.idNumber}
-              </Text>
-              <Text style={{ fontSize: 20 }}>
-                Address: {this.state.investor.address}
+                ID: {user.idNumber}
               </Text>
               <Text style={{ fontSize: 20 }}>
-                Fax: {this.state.investor.fax}
+                Address: {user.address}
+              </Text>
+              <Text style={{ fontSize: 20 }}>
+                Fax: {user.fax}
               </Text>
             </View>
           </View>
@@ -179,5 +101,14 @@ class LinksScreen extends React.Component {
     );
   }
 }
-
-export default LinksScreen;
+const mapStateToProps = state =>
+  ({ loading, token, userId } = state.loginReducer);
+const mapDispatchToProps = dispatch => ({
+  doFetch: (userId, token) => {
+    dispatch(actions.fetchProfile(userId, token));
+  }
+});
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(LinksScreen);

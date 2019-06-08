@@ -7,29 +7,13 @@ import {
   Text,
   ActivityIndicator,
   RefreshControl,
-  ScrollView
+  ScrollView,
+  Button
 } from "react-native";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import {styles} from "../styles";
 import { Header, SearchBar } from "react-native-elements";
-const styles = {
-  profile: {
-    padding: 20,
-    backgroundColor: "#303655",
-    borderColor: "#DBA73F",
-    borderRadius: "33px",
-    borderWidth: "3",
-    shadowColor: "#000",
-    width: 245,
-    height: 267,
-    shadowOpacity: 0.4,
-    shadowRadius: 3,
-    shadoOffset: {
-      height: 3
-    },
-    marginHorizontal: 20,
-    marginVertical: 20,
-    flex: 1
-  }
-};
+
 class CompaniesScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -37,6 +21,8 @@ class CompaniesScreen extends React.Component {
       selectedIndex: 0,
       data: [],
       data2: [],
+      results: [],
+      results2: [],
       loading: false,
       order: "asc",
       selectedKey: "nameInEnglish",
@@ -68,6 +54,7 @@ class CompaniesScreen extends React.Component {
       .then(response => {
         this.setState({
           data2: response.data,
+          results2: response.data,
           loading: false,
           refresh: false
         });
@@ -77,8 +64,20 @@ class CompaniesScreen extends React.Component {
       })
       .finally(() => {});
   };
-  updateSearch = search => {
-    this.setState({ search });
+  updateSearch = text => {
+    const { data, data2, selectedIndex } = this.state;
+    var companies = selectedIndex === 0 ? data : data2;
+    companies = companies
+      .filter(function(company) {
+        return company.nameInEnglish.toLowerCase().includes(text.toLowerCase());
+      })
+      .map(function(country) {
+        return country;
+      });
+    if (selectedIndex === 0)
+      this.setState({ results: companies, search: text });
+    else if (selectedIndex === 1)
+      this.setState({ results2: companies, search: text });
   };
   fetchRequests2 = () => {
     const { navigation } = this.props;
@@ -99,6 +98,7 @@ class CompaniesScreen extends React.Component {
       .then(response => {
         this.setState({
           data: response.data,
+          results: response.data,
           loading: false,
           refresh: false
         });
@@ -109,97 +109,101 @@ class CompaniesScreen extends React.Component {
       .finally(() => {});
   };
   renderView = () => {
-    return (
-      <>
-        {this.state.loading ? (
-          <ActivityIndicator
-            animating={this.state.loading}
-            size="small"
-            color={"#303655"}
-          />
-        ) : (
-          <View
-            style={{
-              flex: 1,
-              flexDirection: "column",
-              alignItems: "center"
-            }}
-          >
-            <FlatList
-              refreshControl={
-                <RefreshControl
-                  refreshing={this.state.refresh}
-                  onRefresh={this._onRefresh}
-                />
-              }
-              data={
-                this.state.selectedIndex === 0
-                  ? this.state.data
-                  : this.state.selectedIndex === 1
-                  ? this.state.data2
-                  : []
-              }
-              renderItem={({ item }) => (
-                <View style={styles.profile}>
-                  <Text
-                    style={{
-                      color: "#DBA73F",
-                      fontWeight: "bold",
-                      fontSize: 23
-                    }}
-                  >
-                    {item.nameInEnglish}
-                  </Text>
-                  <Text
-                    style={{
-                      color: "#8F856B",
-                      fontWeight: "bold",
-                      fontSize: 16
-                    }}
-                  >
-                    {item.nameInArabic}
-                  </Text>
-                  <Text
-                    style={{
-                      color: "#CCCCCC",
-                      fontWeight: "bold",
-                      fontSize: 50
-                    }}
-                  >
-                    {item.legalCompanyForm}
-                  </Text>
-                  <TouchableOpacity
-                    style={{
-                      flex: 1,
-                      justifyContent: "flex-end",
-                      marginBottom: 36
-                    }}
-                  >
-                    <Text style={{ color: "#CCCCCC" }}>View details</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-              keyExtractor={item => {
-                return item._id;
-              }}
+    if (this.state.selectedIndex === 0 || this.state.selectedIndex === 1)
+      return (
+        <>
+          {this.state.loading ? (
+            <ActivityIndicator
+              animating={this.state.loading}
+              size="small"
+              color={"#303655"}
             />
-          </View>
-        )}
-      </>
-    );
+          ) : (
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "column",
+                alignItems: "center"
+              }}
+            >
+              <FlatList
+                refreshControl={
+                  <RefreshControl
+                    refreshing={this.state.refresh}
+                    onRefresh={this._onRefresh}
+                  />
+                }
+                data={
+                  this.state.selectedIndex === 0
+                    ? this.state.results
+                    : this.state.selectedIndex === 1
+                    ? this.state.results2
+                    : []
+                }
+                renderItem={({ item }) => (
+                  <View style={styles.profile}>
+                    <Text
+                      style={{
+                        color: "#DBA73F",
+                        fontWeight: "bold",
+                        fontSize: 23
+                      }}
+                    >
+                      {item.nameInEnglish}
+                    </Text>
+                    <Text
+                      style={{
+                        color: "#8F856B",
+                        fontWeight: "bold",
+                        fontSize: 16
+                      }}
+                    >
+                      {item.nameInArabic}
+                    </Text>
+                    <Text
+                      style={{
+                        color: "#CCCCCC",
+                        fontWeight: "bold",
+                        fontSize: 50
+                      }}
+                    >
+                      {item.legalCompanyForm}
+                    </Text>
+                    <TouchableOpacity
+                      style={{
+                        flex: 1,
+                        justifyContent: "flex-end",
+                        marginBottom: 36
+                      }}
+                    >
+                      <Text style={{ color: "#CCCCCC" }}>View details</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+                keyExtractor={item => {
+                  return item._id;
+                }}
+              />
+            </View>
+          )}
+        </>
+      );
+  };
+  handleFilter = () => {
+    this.props.navigation.navigate("modal");
   };
   handleSort = () => {
     this.setState(prevState => {
       if (this.state.selectedIndex === 0)
         return {
-          data: prevState.data.sort(
+          results: prevState.results.sort(
             this.compare(this.state.selectedKey, this.state.order)
           ),
           order: prevState.order === "asc" ? "desc" : "asc"
         };
       else if (this.state.selectedIndex === 1)
         return {
-          data2: prevState.data2.sort(
+          results2: prevState.results2.sort(
             this.compare(this.state.selectedKey, this.state.order)
           ),
           order: prevState.order === "asc" ? "desc" : "asc"
@@ -248,13 +252,14 @@ class CompaniesScreen extends React.Component {
           placeholder="Type Here..."
           onChangeText={this.updateSearch}
           value={search}
+          inputContainerStyle={{ height: 20 }}
         />
         <View
           style={{
             backgroundColor: "white",
             borderBottomColor: "#eeeeee",
             borderBottomWidth: "0.5",
-            height: 30
+            height: 20
           }}
         >
           <TouchableOpacity
@@ -266,6 +271,23 @@ class CompaniesScreen extends React.Component {
           </TouchableOpacity>
         </View>
         {this.renderView()}
+        <View>
+          <TouchableOpacity
+            style={{
+              position: "absolute",
+              bottom: 0,
+              alignSelf: "flex-end",
+              shadowOpacity: 0.4,
+              shadowRadius: 3,
+              shadoOffset: {
+                height: 3
+              }
+            }}
+            onPress={this.handleFilter}
+          >
+            <Ionicons name={"ios-funnel"} size={50} color={"#303655"} />
+          </TouchableOpacity>
+        </View>
       </>
     );
   }
