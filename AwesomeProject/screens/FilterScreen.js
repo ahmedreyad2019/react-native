@@ -161,8 +161,10 @@ class FilterScreen extends React.Component {
   };
   render() {
     return (
-      <View style={{ backgroundColor:'#f54321'}}>
-     <Text>hi</Text>
+      <View style={{ flex: 1 ,flexDirection: 'column', justifyContent: 'flex-end'}}>
+          <View style={{ height: "50%" ,width: '100%', backgroundColor:"#fff", justifyContent:"center"}}>
+            <Text>Testing a modal with transparent background</Text>
+          </View>
       </View>
     );
   }

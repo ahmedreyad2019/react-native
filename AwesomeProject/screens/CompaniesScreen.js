@@ -8,68 +8,53 @@ import {
   ActivityIndicator,
   RefreshControl,
   ScrollView,
-  Button
+  KeyboardAvoidingView,
+  Button,
+  Modal,
+  Keyboard,
+  StatusBar
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import {styles} from "../styles";
-import { Header, SearchBar } from "react-native-elements";
-
+import { styles } from "../styles";
+import { Header, SearchBar, ButtonGroup } from "react-native-elements";
+import { connect } from "react-redux";
+import * as actions from "../actions/index";
+import CompanyDetials from "../components/CompanyDetails";
+import { LinearGradient } from "expo";
 class CompaniesScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       selectedIndex: 0,
-      data: [],
-      data2: [],
+
       results: [],
       results2: [],
       loading: false,
       order: "asc",
       selectedKey: "nameInEnglish",
-      search: ""
+      search: "",
+      hi: false,
+      companyDetailsVisible: false
     };
   }
   componentDidMount = () => {
-    this.fetchRequests();
-    this.fetchRequests2();
+    this.props.doFetchReq(this.props.token);
+    this.props.doFetchComp(this.props.token);
   };
-  fetchRequests = () => {
-    const { navigation } = this.props;
-    const itemId = navigation.getParam("id", "NO-ID");
-    const otherParam = navigation.getParam("token", "some default value");
-    this.setState({ loading: true });
-
-    console.log(otherParam + " HO");
-    fetch(
-      `http://serverbrogrammers.herokuapp.com/api/investors/MyRequests/all`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "x-access-token": otherParam
-        }
-      }
-    )
-      .then(response => response.json())
-      .then(response => {
-        this.setState({
-          data2: response.data,
-          results2: response.data,
-          loading: false,
-          refresh: false
-        });
-      })
-      .catch(error => {
-        console.log(error);
-      })
-      .finally(() => {});
-  };
+  setModalVisible(visible) {
+    this.setState({ hi: visible });
+  }
   updateSearch = text => {
-    const { data, data2, selectedIndex } = this.state;
-    var companies = selectedIndex === 0 ? data : data2;
+    const { selectedIndex } = this.state;
+    const { approved, requested } = this.props.companies;
+    var companies = approved.concat(requested);
     companies = companies
       .filter(function(company) {
-        return company.nameInEnglish.toLowerCase().includes(text.toLowerCase());
+        return (
+          company.nameInEnglish.toLowerCase().includes(text.toLowerCase()) ||
+          company.nameInArabic.toLowerCase().includes(text.toLowerCase()) ||
+          company.investorName.toLowerCase().includes(text.toLowerCase())
+        );
       })
       .map(function(country) {
         return country;
@@ -79,119 +64,102 @@ class CompaniesScreen extends React.Component {
     else if (selectedIndex === 1)
       this.setState({ results2: companies, search: text });
   };
-  fetchRequests2 = () => {
-    const { navigation } = this.props;
-    const itemId = navigation.getParam("id", "NO-ID");
-    const otherParam = navigation.getParam("token", "some default value");
-    console.log(otherParam + " HO");
-    fetch(
-      `http://serverbrogrammers.herokuapp.com/api/investors/View/ViewCompanies`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "x-access-token": otherParam
-        }
-      }
-    )
-      .then(response => response.json())
-      .then(response => {
-        this.setState({
-          data: response.data,
-          results: response.data,
-          loading: false,
-          refresh: false
-        });
-      })
-      .catch(error => {
-        console.log(error);
-      })
-      .finally(() => {});
-  };
+
   renderView = () => {
-    if (this.state.selectedIndex === 0 || this.state.selectedIndex === 1)
-      return (
-        <>
-          {this.state.loading ? (
-            <ActivityIndicator
-              animating={this.state.loading}
-              size="small"
-              color={"#303655"}
-            />
-          ) : (
-            <View
-              style={{
-                flex: 1,
-                flexDirection: "column",
-                alignItems: "center"
-              }}
-            >
-              <FlatList
-                refreshControl={
-                  <RefreshControl
-                    refreshing={this.state.refresh}
-                    onRefresh={this._onRefresh}
-                  />
-                }
-                data={
-                  this.state.selectedIndex === 0
-                    ? this.state.results
-                    : this.state.selectedIndex === 1
-                    ? this.state.results2
-                    : []
-                }
-                renderItem={({ item }) => (
-                  <View style={styles.profile}>
-                    <Text
-                      style={{
-                        color: "#DBA73F",
-                        fontWeight: "bold",
-                        fontSize: 23
-                      }}
-                    >
-                      {item.nameInEnglish}
-                    </Text>
-                    <Text
-                      style={{
-                        color: "#8F856B",
-                        fontWeight: "bold",
-                        fontSize: 16
-                      }}
-                    >
-                      {item.nameInArabic}
-                    </Text>
-                    <Text
-                      style={{
-                        color: "#CCCCCC",
-                        fontWeight: "bold",
-                        fontSize: 50
-                      }}
-                    >
-                      {item.legalCompanyForm}
-                    </Text>
-                    <TouchableOpacity
-                      style={{
-                        flex: 1,
-                        justifyContent: "flex-end",
-                        marginBottom: 36
-                      }}
-                    >
-                      <Text style={{ color: "#CCCCCC" }}>View details</Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-                keyExtractor={item => {
-                  return item._id;
-                }}
+    return (
+      <View style={{ flex: 1, backgroundColor: "#1C2632" }}>
+        <ButtonGroup
+          selectedButtonStyle={{ backgroundColor: "#90F6DE" }}
+          selectedTextStyle={{ color: "#1C2632" }}
+          containerStyle={{ backgroundColor: "#1C2632" }}
+          buttons={["Approved", "Requested", "Create"]}
+          selectedIndex={this.state.selectedIndex}
+          onPress={event => {
+            this.setState({
+              selectedIndex: event
+            });
+          }}
+        />
+        {this.props.loading ? (
+          <ActivityIndicator animating={true} size="small" color={"#fff"} />
+        ) : (
+          <FlatList
+          
+            refreshControl={
+              <RefreshControl
+                refreshing={this.props.loading}
+                onRefresh={this._onRefresh}
               />
-            </View>
-          )}
-        </>
-      );
+            }
+            data={
+              this.state.selectedIndex === 0
+                ? this.props.companies.approved
+                : this.state.selectedIndex === 1
+                ? this.props.companies.requested
+                : []
+            }
+            renderItem={({ item }) => (
+              <LinearGradient
+                colors={["transparent", "rgba(0,0,0,0.2)"]}
+                style={styles.companyCard}
+              >
+                <Text
+                  style={{
+                    color: "#90F6DE",
+                    fontWeight: "bold",
+                    fontSize: 23,
+                    fontFamily: "AvenirNext-DemiBold"
+                  }}
+                >
+                  {item.nameInEnglish}
+                </Text>
+                <Text
+                  style={{
+                    color: "#79B0A3",
+                    fontWeight: "bold",
+                    fontSize: 16
+                  }}
+                >
+                  {item.nameInArabic}
+                </Text>
+                <Text
+                  style={{
+                    color: "#CCCCCC",
+                    fontWeight: "bold",
+                    fontSize: 10,
+                    position: "absolute",
+                    top: 10,
+                    right: 10,
+                    alignSelf: "flex-end"
+                  }}
+                >
+                  {item.legalCompanyForm}
+                </Text>
+                <TouchableOpacity
+                  style={{
+                    position: "absolute",
+                    bottom: 10,
+                    right: 10,
+                    alignSelf: "flex-end"
+                  }}
+                  onPress={() => (
+                    this.props.doOpenCompanyModal(),
+                    this.props.doSetCompany(item)
+                  )}
+                >
+                  <Text style={{ color: "#cccccc" }}>View details</Text>
+                </TouchableOpacity>
+              </LinearGradient>
+            )}
+            keyExtractor={item => {
+              return item._id;
+            }}
+          />
+        )}
+      </View>
+    );
   };
-  handleFilter = () => {
-    this.props.navigation.navigate("modal");
-  };
+
   handleSort = () => {
     this.setState(prevState => {
       if (this.state.selectedIndex === 0)
@@ -226,50 +194,137 @@ class CompaniesScreen extends React.Component {
     };
   };
   render() {
-    const { search } = this.state;
     return (
       <>
+        <StatusBar barStyle={"light-content"} />
         <Header
-          backgroundColor={"#fff"}
+          backgroundColor={"#1C2632"}
           centerComponent={{
             text: "Companies",
-            style: { color: "black", fontWeight: "bold", fontSize: 20 }
+            style: { color: "#74808E", fontWeight: "bold", fontSize: 20 }
           }}
+          rightComponent={
+            <Ionicons
+              name={"ios-search"}
+              onPress={() =>
+                this.setState(prevState => ({ hi: !prevState.hi }))
+              }
+              size={20}
+              color={"#74808E"}
+            />
+          }
         />
-        <SegmentedControlIOS
-          values={["Approved", "Requested", "Create"]}
-          selectedIndex={this.state.selectedIndex}
-          onChange={event => {
-            this.setState({
-              selectedIndex: event.nativeEvent.selectedSegmentIndex
-            });
-          }}
-          tintColor={"#303655"}
-        />
-        <SearchBar
-          containerStyle={{ backgroundColor: "white" }}
-          platform="ios"
-          placeholder="Type Here..."
-          onChangeText={this.updateSearch}
-          value={search}
-          inputContainerStyle={{ height: 20 }}
-        />
-        <View
-          style={{
-            backgroundColor: "white",
-            borderBottomColor: "#eeeeee",
-            borderBottomWidth: "0.5",
-            height: 20
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.props.companyModalVisible}
+          onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
           }}
         >
-          <TouchableOpacity
-            onPress={e => {
-              this.handleSort(e);
-            }}
+          <CompanyDetials />
+        </Modal>
+        <Modal
+          animationType="fade"
+          transparent={false}
+          visible={this.state.hi}
+          onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+          }}
+        >
+          <KeyboardAvoidingView
+            style={{ flex: 1, backgroundColor: "#1C2632", marginTop: 20 }}
+            behavior="padding"
+            enabled
           >
-            <Text>sort</Text>
-          </TouchableOpacity>
-        </View>
+            <SearchBar
+              ref={search => (this.search = search)}
+              containerStyle={{ backgroundColor: "#1C2632" }}
+              platform="ios"
+              placeholder="Type Here..."
+              onChangeText={this.updateSearch}
+              value={this.state.search}
+              inputContainerStyle={{ height: 20 }}
+              onCancel={() => {
+                this.setModalVisible(false);
+              }}
+              returnKeyType={"search"}
+              on
+              autoFocus={true}
+            />
+            <FlatList
+              
+              keyboardDismissMode={"on-drag"}
+              keyboardShouldPersistTaps={"always"}
+              refreshControl={
+                <RefreshControl
+                  refreshing={this.props.loading}
+                  onRefresh={this._onRefresh}
+                />
+              }
+              data={
+                this.state.selectedIndex === 0
+                  ? this.state.results
+                  : this.state.selectedIndex === 1
+                  ? this.state.results2
+                  : []
+              }
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={{
+                    height: 60,
+                    paddingHorizontal: 10,
+                    borderBottomColor: "#293749",
+                    borderBottomWidth: 1,
+                    flex: 1,
+                    flexDirection: "column",
+                    justifyContent: "center"
+                  }}
+                  onPress={() => (
+                    Keyboard.dismiss(),
+                    this.setModalVisible(false),
+                    this.props.doOpenCompanyModal(),
+                    this.props.doSetCompany(item)
+                  )}
+                >
+                  <Text style={{ color: "white", textAlignVertical: "top" }}>
+                    {item.nameInEnglish} ({item.nameInArabic})
+                  </Text>
+
+                  <Text style={{ color: "#74808E" }}>{item.investorName}</Text>
+                  <Text
+                    style={{
+                      fontSize: 10,
+                      color: "#B7C1CD",
+                      alignSelf: "flex-end",
+                      right: 10,
+                      bottom: 5,
+                      position: "absolute"
+                    }}
+                  >
+                    {item.status}
+                  </Text>
+                  <Text
+                    style={{
+                      color: "#74808E",
+                      alignSelf: "flex-end",
+                      right: 10,
+                      top: 5,
+                      position: "absolute"
+                    }}
+                  >
+                    {item.legalCompanyForm}
+                  </Text>
+                </TouchableOpacity>
+              )}
+              keyExtractor={item => {
+                return item._id;
+              }}
+            />
+          </KeyboardAvoidingView>
+        </Modal>
+
         {this.renderView()}
         <View>
           <TouchableOpacity
@@ -283,14 +338,39 @@ class CompaniesScreen extends React.Component {
                 height: 3
               }
             }}
-            onPress={this.handleFilter}
+            onPress={() => this.setState({ filterVisible: true })}
           >
-            <Ionicons name={"ios-funnel"} size={50} color={"#303655"} />
+            <Ionicons name={"ios-funnel"} size={50} color={"#90F6DE"} />
           </TouchableOpacity>
         </View>
       </>
     );
   }
 }
+const mapStateToProps = state => {
+  return {
+    token: state.loginReducer.token,
+    companies: state.companyReducer.companies,
+    loading: state.loginReducer.loading,
+    companyModalVisible: state.companyReducer.companyModalVisible
+  };
+};
 
-export default CompaniesScreen;
+const mapDispatchToProps = dispatch => ({
+  doFetchReq: token => {
+    dispatch(actions.fetchRequests(token));
+  },
+  doFetchComp: token => {
+    dispatch(actions.fetchCompanies(token));
+  },
+  doSetCompany: company => {
+    dispatch(actions.selectCompany(company));
+  },
+  doOpenCompanyModal: () => {
+    dispatch(actions.openCompanyModal());
+  }
+});
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(CompaniesScreen);

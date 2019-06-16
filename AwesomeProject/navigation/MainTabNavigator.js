@@ -1,8 +1,10 @@
 import {
   createStackNavigator,
   createAppContainer,
-  createBottomTabNavigator
+  createBottomTabNavigator,
+  createSwitchNavigator
 } from "react-navigation";
+
 import { Easing, Animated } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import HomeScreen from "../screens/HomeScreen";
@@ -28,25 +30,6 @@ const getTabBarIcon = (navigation, focused, tintColor) => {
   return <IconComponent name={`ios-` + iconName} size={25} color={tintColor} />;
 };
 
-const tabNav = createAppContainer(
-  createBottomTabNavigator(
-    {
-      Companies: { screen: CompaniesScreen },
-      Feed: { screen: FeedScreen },
-      Profile: { screen: ProfileScreen }
-    },
-    {
-      defaultNavigationOptions: ({ navigation }) => ({
-        tabBarIcon: ({ focused, tintColor }) =>
-          getTabBarIcon(navigation, focused, tintColor)
-      }),
-      tabBarOptions: {
-        activeTintColor: "#303655",
-        inactiveTintColor: "#bbbbbb"
-      }
-    }
-  )
-);
 const filterNav = createStackNavigator(
   {
     content: { screen: CompaniesScreen },
@@ -84,20 +67,45 @@ const filterNav = createStackNavigator(
     })
   }
 );
+const tabNav = createAppContainer(
+  createBottomTabNavigator(
+    {
+      Companies: { screen: filterNav },
+      Feed: { screen: FeedScreen },
+      Profile: { screen: ProfileScreen }
+    },
+    {
+      defaultNavigationOptions: ({ navigation }) => ({
+        tabBarIcon: ({ focused, tintColor }) =>
+          getTabBarIcon(navigation, focused, tintColor)
+      }),
+      tabBarOptions: {
+
+        activeTintColor: "#90F6DE",
+        inactiveTintColor: "#bbbbbb",
+        style: {
+          backgroundColor: "#263241"
+        }
+      }
+    }
+  )
+);
 
 const MainNavigator = createAppContainer(
-  createStackNavigator(
+  createSwitchNavigator(
     {
       Home: { screen: HomeScreen },
       Register: { screen: RegisterScreen },
-      Profile: { screen: tabNav }
+      Dashboard: { screen: tabNav }
     },
     {
       mode: "card",
       headerMode: "none",
+
       navigationOptions: {
         headerVisible: true
       },
+
       transitionConfig: () => ({
         transitionSpec: {
           duration: 300,
