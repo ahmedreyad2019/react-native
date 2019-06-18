@@ -1,0 +1,150 @@
+import { connect } from "react-redux";
+import React from "react";
+import {
+  View,
+  PickerIOS,
+  Text,
+  TouchableOpacity,
+  Animated
+} from "react-native";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { styles } from "../styles";
+import * as actions from "../actions/index";
+var PickerItemIOS = PickerIOS.Item;
+class Filter extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      iconName: "ios-arrow-up",
+      order: "asc",
+      keys: [],
+      selectedKey: ""
+    };
+  }
+  handlePassword = () => {
+    this.props.doSetOrder();
+    this.handleSort();
+  };
+  handleAttributes = () => {
+    const { requested, approved } = this.props.companies;
+    this.setState({ keys: Object.keys(requested[0]) });
+  };
+  handleSort = () => {
+    this.props.doSetCompanies(
+      this.props.companies.approved.sort(
+        this.compare(this.state.selectedKey, this.props.order)
+      )
+    );
+
+    this.props.doSetRequests(
+      this.props.companies.requested.sort(
+        this.compare(this.state.selectedKey, this.props.order)
+      )
+    );
+  };
+
+  componentDidMount = () => {
+    this.handleAttributes();
+  };
+  compare = (key, order = "asc") => {
+    return function(item1, item2) {
+      if (!item1.hasOwnProperty(key) || !item2.hasOwnProperty(key)) {
+        return 0;
+      }
+      let att1 =
+        typeof item1[key] === "string" ? item1[key].toUpperCase() : item1[key];
+      let att2 =
+        typeof item2[key] === "string" ? item2[key].toUpperCase() : item2[key];
+      let comp = 0;
+      if (att1 > att2) comp = 1;
+      else if (att2 > att1) comp = -1;
+      return order == "desc" ? comp * -1 : comp;
+    };
+  };
+  render() {
+    const labelStyle = {
+      position: "absolute",
+      color: "#74808E",
+      top:0,
+      left: 15,
+      transform: [{ rotate: this.props.order === "asc" ? "180deg" : "0deg" }]
+    };
+    return (
+      <View
+        style={{
+          ...styles.CompanyDetails,
+          padding: 0,
+        
+          position: "absolute",
+          bottom: 0,
+          backgroundColor: "#d1d5db"
+        }}
+      >
+        <View
+          style={{
+            height: 40,
+            borderBottomWidth: .3,
+            borderBottomColor: "#74808E"
+          }}
+        />
+        <Ionicons
+          size={40}
+          color={"#F08080"}
+          name={this.state.iconName}
+          style={labelStyle}
+          onPress={this.handlePassword}
+        />
+        <PickerIOS
+          itemStyle={{}}
+          selectedValue={this.state.selectedKey}
+          onValueChange={value => {this.setState({ selectedKey: value }),this.handleSort()}}
+        >
+          {this.state.keys.map((keySelection, i) => (
+            <PickerItemIOS key={i} value={keySelection} label={keySelection} />
+          ))}
+        </PickerIOS>
+        <TouchableOpacity
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 15,
+          
+          }}
+          onPress={() => {
+            this.props.doCloseFilterModal(), this.handleSort();
+          }}
+        >
+          <Ionicons name={"ios-close"} size={40} color={"#F08080"} />
+        </TouchableOpacity>
+      </View>
+    );
+  }
+}
+const mapStateToProps = state => {
+  return {
+    token: state.loginReducer.token,
+    companies: state.companyReducer.companies,
+    loading: state.loginReducer.loading,
+    selectedCompany: state.companyReducer.selectedCompany,
+    order: state.companyReducer.order
+  };
+};
+
+const mapDispatchToProps = dispatch => ({
+  doCloseFilterModal: () => {
+    dispatch(actions.closeFilterModal());
+  },
+  doSetOrder: () => {
+    dispatch(actions.setOrder());
+  },
+  doSetCompanies: company => {
+    dispatch(actions.setCompanies(company));
+  },
+  doSetRequests: company => {
+    dispatch(actions.setRequests(company));
+  }
+});
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Filter);

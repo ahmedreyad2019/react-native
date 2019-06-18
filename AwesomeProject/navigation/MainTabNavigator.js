@@ -70,8 +70,8 @@ const filterNav = createStackNavigator(
 const tabNav = createAppContainer(
   createBottomTabNavigator(
     {
-      Companies: { screen: filterNav },
       Feed: { screen: FeedScreen },
+      Companies: { screen: filterNav },
       Profile: { screen: ProfileScreen }
     },
     {

@@ -7,7 +7,9 @@ const initialState = {
   allCompanies: [],
   selectedCompany: "",
   companyModalVisible: false,
-  dateModalVisible: false
+  filterModalVisible: false,
+  dateModalVisible: false,
+  order:'asc'
 };
 export default (companyReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -19,7 +21,7 @@ export default (companyReducer = (state = initialState, action) => {
     case actionTypes.SET_ALL_COMPANIES:
       return {
         ...state,
-        allCompanies: action.companies
+        allCompanies: action.allCompanies
       };
     case actionTypes.SET_REQUESTS:
       return {
@@ -36,10 +38,25 @@ export default (companyReducer = (state = initialState, action) => {
         ...state,
         companyModalVisible: false
       };
+    case actionTypes.SET_ORDER:
+      return {
+        ...state,
+       order:state.order==='asc'?'desc':'asc'
+      };
     case actionTypes.OPEN_COMPANY_MODAL:
       return {
         ...state,
         companyModalVisible: true
+      };
+    case actionTypes.CLOSE_FILTER_MODAL:
+      return {
+        ...state,
+        filterModalVisible: false
+      };
+    case actionTypes.OPEN_FILTER_MODAL:
+      return {
+        ...state,
+        filterModalVisible: true
       };
     case actionTypes.CLOSE_DATE_MODAL:
       return {

@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   Button,
   Modal,
+  AsyncStorage,
   Keyboard,
   StatusBar
 } from "react-native";
@@ -20,35 +21,40 @@ import { Header, SearchBar, ButtonGroup } from "react-native-elements";
 import { connect } from "react-redux";
 import * as actions from "../actions/index";
 import CompanyDetials from "../components/CompanyDetails";
+import Filter from "../components/Filter";
 import { LinearGradient } from "expo";
 class CompaniesScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       selectedIndex: 0,
-
-      results: [],
       results2: [],
-      loading: false,
       order: "asc",
-      selectedKey: "nameInEnglish",
       search: "",
       hi: false,
-      companyDetailsVisible: false
+      companyDetailsVisible: false,
+      selectedKey: "nameInEnglish"
     };
   }
-  componentDidMount = () => {
-    this.props.doFetchReq(this.props.token);
-    this.props.doFetchComp(this.props.token);
-  };
+
   setModalVisible(visible) {
     this.setState({ hi: visible });
   }
+
+  componentDidMount() {
+    this.makeRemoteRequest();
+  }
+  makeRemoteRequest = () => {
+    AsyncStorage.getItem("jwt").then(res => {
+      this.props.doFetchReq(res);
+      this.props.doFetchComp(res);
+    });
+  };
+
   updateSearch = text => {
-    const { selectedIndex } = this.state;
     const { approved, requested } = this.props.companies;
-    var companies = approved.concat(requested);
-    companies = companies
+    var companies = approved
+      .concat(requested)
       .filter(function(company) {
         return (
           company.nameInEnglish.toLowerCase().includes(text.toLowerCase()) ||
@@ -59,13 +65,19 @@ class CompaniesScreen extends React.Component {
       .map(function(country) {
         return country;
       });
-    if (selectedIndex === 0)
-      this.setState({ results: companies, search: text });
-    else if (selectedIndex === 1)
-      this.setState({ results2: companies, search: text });
-  };
 
+    this.setState({ results2: companies, search: text });
+  };
+  _onRefresh = () => {
+    this.makeRemoteRequest();
+  };
   renderView = () => {
+    const fbObject = this.props.companies.approved;
+    const newArr = Object.keys(fbObject).map(key => {
+      fbObject[key]._id = key;
+      return fbObject[key];
+    });
+    
     return (
       <View style={{ flex: 1, backgroundColor: "#1C2632" }}>
         <ButtonGroup
@@ -80,119 +92,80 @@ class CompaniesScreen extends React.Component {
             });
           }}
         />
-        {this.props.loading ? (
-          <ActivityIndicator animating={true} size="small" color={"#fff"} />
-        ) : (
-          <FlatList
-          
-            refreshControl={
-              <RefreshControl
-                refreshing={this.props.loading}
-                onRefresh={this._onRefresh}
-              />
-            }
-            data={
-              this.state.selectedIndex === 0
-                ? this.props.companies.approved
-                : this.state.selectedIndex === 1
-                ? this.props.companies.requested
-                : []
-            }
-            renderItem={({ item }) => (
-              <LinearGradient
-                colors={["transparent", "rgba(0,0,0,0.2)"]}
-                style={styles.companyCard}
+        <FlatList
+          refreshControl={
+            <RefreshControl
+              refreshing={this.props.loading}
+              onRefresh={this._onRefresh}
+            />
+          }
+          data={
+            this.state.selectedIndex === 0
+              ? newArr
+              : this.state.selectedIndex === 1
+              ? this.props.companies.requested
+              : []
+          }
+          renderItem={({ item }) => (
+            <LinearGradient
+              colors={["transparent", "rgba(0,0,0,0.2)"]}
+              style={styles.companyCard}
+            >
+              <Text
+                style={{
+                  color: "#90F6DE",
+                  fontWeight: "bold",
+                  fontSize: 23,
+                  fontFamily: "AvenirNext-DemiBold"
+                }}
               >
-                <Text
-                  style={{
-                    color: "#90F6DE",
-                    fontWeight: "bold",
-                    fontSize: 23,
-                    fontFamily: "AvenirNext-DemiBold"
-                  }}
-                >
-                  {item.nameInEnglish}
-                </Text>
-                <Text
-                  style={{
-                    color: "#79B0A3",
-                    fontWeight: "bold",
-                    fontSize: 16
-                  }}
-                >
-                  {item.nameInArabic}
-                </Text>
-                <Text
-                  style={{
-                    color: "#CCCCCC",
-                    fontWeight: "bold",
-                    fontSize: 10,
-                    position: "absolute",
-                    top: 10,
-                    right: 10,
-                    alignSelf: "flex-end"
-                  }}
-                >
-                  {item.legalCompanyForm}
-                </Text>
-                <TouchableOpacity
-                  style={{
-                    position: "absolute",
-                    bottom: 10,
-                    right: 10,
-                    alignSelf: "flex-end"
-                  }}
-                  onPress={() => (
-                    this.props.doOpenCompanyModal(),
-                    this.props.doSetCompany(item)
-                  )}
-                >
-                  <Text style={{ color: "#cccccc" }}>View details</Text>
-                </TouchableOpacity>
-              </LinearGradient>
-            )}
-            keyExtractor={item => {
-              return item._id;
-            }}
-          />
-        )}
+                {item.nameInEnglish}
+              </Text>
+              <Text
+                style={{
+                  color: "#79B0A3",
+                  fontWeight: "bold",
+                  fontSize: 16
+                }}
+              >
+                {item.nameInArabic}
+              </Text>
+              <Text
+                style={{
+                  color: "#CCCCCC",
+                  fontWeight: "bold",
+                  fontSize: 10,
+                  position: "absolute",
+                  top: 10,
+                  right: 10,
+                  alignSelf: "flex-end"
+                }}
+              >
+                {item.legalCompanyForm}
+              </Text>
+              <TouchableOpacity
+                style={{
+                  position: "absolute",
+                  bottom: 10,
+                  right: 10,
+                  alignSelf: "flex-end"
+                }}
+                onPress={() => (
+                  this.props.doOpenCompanyModal(), this.props.doSetCompany(item)
+                )}
+              >
+                <Text style={{ color: "#cccccc" }}>View details</Text>
+              </TouchableOpacity>
+            </LinearGradient>
+          )}
+          keyExtractor={item => {
+            return item._id;
+          }}
+        />
       </View>
     );
   };
 
-  handleSort = () => {
-    this.setState(prevState => {
-      if (this.state.selectedIndex === 0)
-        return {
-          results: prevState.results.sort(
-            this.compare(this.state.selectedKey, this.state.order)
-          ),
-          order: prevState.order === "asc" ? "desc" : "asc"
-        };
-      else if (this.state.selectedIndex === 1)
-        return {
-          results2: prevState.results2.sort(
-            this.compare(this.state.selectedKey, this.state.order)
-          ),
-          order: prevState.order === "asc" ? "desc" : "asc"
-        };
-    });
-  };
-  compare = (key, order = "asc") => {
-    return function(item1, item2) {
-      if (!item1.hasOwnProperty(key) || !item2.hasOwnProperty(key)) {
-        return 0;
-      }
-      let att1 =
-        typeof item1[key] === "string" ? item1[key].toUpperCase() : item1[key];
-      let att2 =
-        typeof item2[key] === "string" ? item2[key].toUpperCase() : item2[key];
-      let comp = 0;
-      if (att1 > att2) comp = 1;
-      else if (att2 > att1) comp = -1;
-      return order == "desc" ? comp * -1 : comp;
-    };
-  };
   render() {
     return (
       <>
@@ -209,7 +182,7 @@ class CompaniesScreen extends React.Component {
               onPress={() =>
                 this.setState(prevState => ({ hi: !prevState.hi }))
               }
-              size={20}
+              size={25}
               color={"#74808E"}
             />
           }
@@ -224,6 +197,16 @@ class CompaniesScreen extends React.Component {
           }}
         >
           <CompanyDetials />
+        </Modal>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.props.filterModalVisible}
+          onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+          }}
+        >
+          <Filter />
         </Modal>
         <Modal
           animationType="fade"
@@ -254,7 +237,6 @@ class CompaniesScreen extends React.Component {
               autoFocus={true}
             />
             <FlatList
-              
               keyboardDismissMode={"on-drag"}
               keyboardShouldPersistTaps={"always"}
               refreshControl={
@@ -263,13 +245,7 @@ class CompaniesScreen extends React.Component {
                   onRefresh={this._onRefresh}
                 />
               }
-              data={
-                this.state.selectedIndex === 0
-                  ? this.state.results
-                  : this.state.selectedIndex === 1
-                  ? this.state.results2
-                  : []
-              }
+              data={this.state.results2}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={{
@@ -338,7 +314,7 @@ class CompaniesScreen extends React.Component {
                 height: 3
               }
             }}
-            onPress={() => this.setState({ filterVisible: true })}
+            onPress={() => this.props.doOpenFilterModal()}
           >
             <Ionicons name={"ios-funnel"} size={50} color={"#90F6DE"} />
           </TouchableOpacity>
@@ -350,9 +326,13 @@ class CompaniesScreen extends React.Component {
 const mapStateToProps = state => {
   return {
     token: state.loginReducer.token,
+    userId: state.loginReducer.userId,
+    user: state.loginReducer.user,
     companies: state.companyReducer.companies,
     loading: state.loginReducer.loading,
-    companyModalVisible: state.companyReducer.companyModalVisible
+    companyModalVisible: state.companyReducer.companyModalVisible,
+    filterModalVisible: state.companyReducer.filterModalVisible,
+    order: state.companyReducer.order
   };
 };
 
@@ -366,8 +346,17 @@ const mapDispatchToProps = dispatch => ({
   doSetCompany: company => {
     dispatch(actions.selectCompany(company));
   },
+  doSetCompanies: company => {
+    dispatch(actions.setCompanies(company));
+  },
+  doSetRequests: company => {
+    dispatch(actions.setRequests(company));
+  },
   doOpenCompanyModal: () => {
     dispatch(actions.openCompanyModal());
+  },
+  doOpenFilterModal: () => {
+    dispatch(actions.openFilterModal());
   }
 });
 export default connect(

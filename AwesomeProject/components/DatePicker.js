@@ -15,31 +15,35 @@ class DatePicker extends Component {
       <View style={{ flex: 1, flexDirection: "column-reverse" }}>
         <View
           style={{
-            backgroundColor: "#ccc"
+            backgroundColor: "#d1d5db"
           }}
         >
+          <View
+            style={{
+              height: 30,
+              backgroundColor: "#fff",
+              borderBottomWidth: 1,
+              borderBottomColor: "#74808E",
+              borderTopWidth: 2
+            }}
+          />
           <DatePickerIOS
             mode={"date"}
             date={new Date(this.props.user.dob)}
             onDateChange={newDate => this.setState({ chosenDate: newDate })}
           />
-          <TouchableOpacity
+
+          <Ionicons
+            name={"ios-close"}
+            size={40}
+            color={"#F08080"}
             style={{
               position: "absolute",
               top: 0,
-              right: 15,
-              alignSelf: "flex-end",
-              shadowOpacity: 0.4,
-              shadowRadius: 3,
-              shadoOffset: {
-                height: 3
-              }
+              right: 15
             }}
             onPress={() => this.props.doCloseDateModal()}
-          >
-            <Ionicons name={"ios-close"} size={40} color={"#90F6DE"} />
-          </TouchableOpacity>
-         
+          />
         </View>
       </View>
     );

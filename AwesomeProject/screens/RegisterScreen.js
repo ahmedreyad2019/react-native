@@ -5,90 +5,122 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Picker,
-  Modal,
-  TouchableHighlight,
-  Alert
+  ActivityIndicator,
+  Animated,
+  Easing
 } from "react-native";
-
-import {styles} from "../styles";
-
+import { LinearGradient } from "expo";
+import { connect } from "react-redux";
+import { styles } from "../styles";
+import * as actions from "../actions/index";
+import FloatingLabelInput from "../components/FloatingLabelInput";
 class RegisterScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       email: "",
-      password: "",
-      c: true,
-      loggedin: false,
-      token: "",
-      error: false,
-      name: "",
-      modalVisible: false
+      password: ""
     };
-  }
-  setModalVisible(visible) {
-    this.setState({ modalVisible: visible });
   }
 
-  componentDidMount() {
-    const { navigation } = this.props;
-    const itemId = navigation.getParam("token", "NO-ID");
-  }
-  handleInputChange = event => {
-    return text => {
-      this.setState({
-        [event]: text.nativeEvent.text
-      });
-    };
+  handleLoading = () => {
+    return (
+      <View style={{ paddingHorizontal: 60 }}>
+        <TouchableOpacity
+          onPress={() =>
+            this.props.doLogin(this.state.email, this.state.password)
+          }
+        >
+          <LinearGradient
+            style={!this.props.error ? styles.button : styles.buttonError}
+            colors={["transparent", "rgba(0,0,0,0.2)"]}
+          >
+            {!this.props.loading ? (
+              <Text
+                style={
+                  !this.props.error ? { color: "#FFF" } : { color: "#FF0000" }
+                }
+              >
+                Sign in
+              </Text>
+            ) : (
+              <ActivityIndicator
+                animating={this.props.loading}
+                size="small"
+                color={"#FFF"}
+              />
+            )}
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
+    );
   };
-  handleEmail = event => {
-    this.setState({ email: event });
-  };
-  handlePassword = event => {
-    this.setState({ password: event });
-  };
-  handleSubmit = () => {
-    console.log(this.state);
+  componentWillUpdate = () => {
+    if (this.props.loggedIn) {
+      this.props.navigation.navigate("Dashboard");
+    }
   };
 
   render() {
     return (
-      <View style={{ marginTop: 22 }}>
-        <Modal
-          style={{ backgroundColor: "red" }}
-          presentationStyle={"pageSheet"}
-          animationType="slide"
-          transparent={false}
-          visible={this.state.modalVisible}
-          onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
-          }}
-        >
-          <View style={{ marginTop: 22 }}>
-            <View>
-              <Text>Hello World!</Text>
+      <KeyboardAvoidingView
+        style={{
+          backgroundColor: "#1C2632",
+          flex: 1,
+          flexDirection: "column",
+          justifyContent: "space-evenly",
+          alignItems: "stretch",
+          padding: 30
+        }}
+        behavior="padding"
+        enabled
+      >
+        <View style={{}}>
+          <FloatingLabelInput
+            style={styles.text}
+            label="Email"
+            onChangeText={text => this.setState({ email: text })}
+            keyboardType="email-address"
+            value={this.state.email}
+          />
 
-              <TouchableHighlight
-                onPress={() => {
-                  this.setModalVisible(!this.state.modalVisible);
-                }}
-              >
-                <Text>Hide Modal</Text>
-              </TouchableHighlight>
-            </View>
-          </View>
-        </Modal>
-
-        <TouchableHighlight
-          onPress={() => {
-            this.setModalVisible(true);
-          }}
-        >
-          <Text>Show Modal</Text>
-        </TouchableHighlight>
-      </View>
+          <FloatingLabelInput
+            style={styles.text}
+            label={"password"}
+            onChangeText={text => this.setState({ password: text })}
+            textContentType="password"
+            value={this.state.password}
+          />
+          <FloatingLabelInput
+            style={styles.text}
+            label={"Repeat Password"}
+            onChangeText={text => this.setState({ passwordRepeat: text })}
+            textContentType={"password"}
+            value={this.state.passwordRepeat}
+          />
+        </View>
+        <View>
+          {this.handleLoading()}
+          <TouchableOpacity
+            onPress={() => this.props.navigation.navigate("Register")}
+          >
+            <Text style={{ color: "#74808E" }}>
+              if you do not have an account, register here
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
     );
   }
 }
-export default RegisterScreen;
+const mapStateToProps = state =>
+  ({ token, loggedIn, loading } = state.loginReducer);
+const mapDispatchToProps = dispatch => ({
+  doLogin: (email, password) => {
+    dispatch(actions.login(email, password));
+  }
+});
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(RegisterScreen);

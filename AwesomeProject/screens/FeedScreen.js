@@ -11,6 +11,7 @@ import {
   TouchableHighlight,
   StatusBar,
   Modal,
+  Keyboard,
   View
 } from "react-native";
 import { Header, SearchBar } from "react-native-elements";
@@ -55,7 +56,6 @@ class FeedScreen extends React.Component {
     this.setState({ results2: companies, search: text });
   };
   setModalVisible(visible) {
-    console.log(this.props.allCompanies);
     this.setState({ hi: visible });
   }
   render() {
@@ -89,184 +89,190 @@ class FeedScreen extends React.Component {
             justifyContent: "flex-start",
             backgroundColor: "#1C2632"
           }}
-          // refreshControl={
-          //   <RefreshControl
-          //     refreshing={this.state.refresh}
-          //     onRefresh={this._onRefresh}
-          //   />
-          // }
-        >
-          <View>
-            <Text
-              style={{ fontSize: 29, fontWeight: "bold", color: "#90F6DE" }}
-            >
-              Electronic Journal
-            </Text>
-          </View>
-          <Modal
-            animationType="fade"
-            transparent={false}
-            visible={this.state.hi}
-            onRequestClose={() => {
-              Alert.alert("Modal has been closed.");
-            }}
-          >
-            <KeyboardAvoidingView
-              style={{ flex: 1, backgroundColor: "#1C2632", marginTop: 20 }}
-              behavior="padding"
-              enabled
-            >
-              <SearchBar
-                ref={search => (this.search = search)}
-                containerStyle={{ backgroundColor: "#1C2632" }}
-                platform="ios"
-                placeholder="Type Here..."
-                onChangeText={this.updateSearch}
-                value={this.state.search}
-                inputContainerStyle={{ height: 20 }}
-                onCancel={() => {
-                  this.setModalVisible(false);
-                }}
-                returnKeyType={"search"}
-                autoFocus={true}
-              />
-              <FlatList
-                keyboardDismissMode={"on-drag"}
-                keyboardShouldPersistTaps={"always"}
-                // refreshControl={
-                //   <RefreshControl
-                //     refreshing={this.props.loading}
-                //     onRefresh={this._onRefresh}
-                //   />
-                // }
-                data={this.state.results2}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    style={{
-                      height: 60,
-                      paddingHorizontal: 10,
-                      borderBottomColor: "#293749",
-                      borderBottomWidth: 1,
-                      flex: 1,
-                      flexDirection: "column",
-                      justifyContent: "center"
-                    }}
-                    onPress={() => (
-                      Keyboard.dismiss(),
-                      this.setModalVisible(false),
-                      this.props.doOpenCompanyModal(),
-                      this.props.doSetCompany(item)
-                    )}
-                  >
-                    <Text style={{ color: "white", textAlignVertical: "top" }}>
-                      {item.nameInEnglish} ({item.nameInArabic})
-                    </Text>
-
-                    <Text style={{ color: "#74808E" }}>
-                      {item.investorName}
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: 10,
-                        color: "#B7C1CD",
-                        alignSelf: "flex-end",
-                        right: 10,
-                        bottom: 5,
-                        position: "absolute"
-                      }}
-                    >
-                      {item.status}
-                    </Text>
-                    <Text
-                      style={{
-                        color: "#74808E",
-                        alignSelf: "flex-end",
-                        right: 10,
-                        top: 5,
-                        position: "absolute"
-                      }}
-                    >
-                      {item.legalCompanyForm}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-                keyExtractor={item => {
-                  return item._id;
-                }}
-              />
-            </KeyboardAvoidingView>
-          </Modal>
-          <View>
-            <FlatList
-              snapToInterval={300}
-              bouncesZoom
-              indicatorStyle={"white"}
-              snapToAlignment={"center"}
-              decelerationRate="fast"
-              horizontal
-              data={this.props.allCompanies}
-              renderItem={({ item }) => (
-                <LinearGradient
-                  colors={["transparent", "rgba(0,0,0,0.2)"]}
-                  style={{
-                    ...styles.companyCard,
-                    marginHorizontal: 10,
-                    width: 280
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: "#90F6DE",
-                      fontWeight: "bold",
-                      fontSize: 23,
-                      fontFamily: "AvenirNext-DemiBold"
-                    }}
-                  >
-                    {item.nameInEnglish}
-                  </Text>
-                  <Text
-                    style={{
-                      color: "#79B0A3",
-                      fontWeight: "bold",
-                      fontSize: 16
-                    }}
-                  >
-                    {item.nameInArabic}
-                  </Text>
-                  <Text
-                    style={{
-                      color: "#CCCCCC",
-                      fontWeight: "bold",
-                      fontSize: 10,
-                      position: "absolute",
-                      top: 10,
-                      right: 10,
-                      alignSelf: "flex-end"
-                    }}
-                  >
-                    {item.legalCompanyForm}
-                  </Text>
-                  <TouchableOpacity
-                    style={{
-                      position: "absolute",
-                      bottom: 10,
-                      right: 10,
-                      alignSelf: "flex-end"
-                    }}
-                    onPress={() => (
-                      this.props.doOpenCompanyModal(),
-                      this.props.doSetCompany(item)
-                    )}
-                  >
-                    <Text style={{ color: "#cccccc" }}>View details</Text>
-                  </TouchableOpacity>
-                </LinearGradient>
-              )}
-              keyExtractor={item => {
-                return item._id;
-              }}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refresh}
+              onRefresh={this._onRefresh}
             />
-          </View>
+          }
+        >
+      
+            <>
+              <View>
+                <Text
+                  style={{ fontSize: 29, fontWeight: "bold", color: "#90F6DE" }}
+                >
+                  Electronic Journal
+                </Text>
+              </View>
+              <Modal
+                animationType="fade"
+                transparent={false}
+                visible={this.state.hi}
+                onRequestClose={() => {
+                  Alert.alert("Modal has been closed.");
+                }}
+              >
+                <KeyboardAvoidingView
+                  style={{ flex: 1, backgroundColor: "#1C2632", marginTop: 20 }}
+                  behavior="padding"
+                  enabled
+                >
+                  <SearchBar
+                    ref={search => (this.search = search)}
+                    containerStyle={{ backgroundColor: "#1C2632" }}
+                    platform="ios"
+                    placeholder="Type Here..."
+                    onChangeText={this.updateSearch}
+                    value={this.state.search}
+                    inputContainerStyle={{ height: 20 }}
+                    onCancel={() => {
+                      this.setModalVisible(false);
+                    }}
+                    returnKeyType={"search"}
+                    autoFocus={true}
+                  />
+                  <FlatList
+                    keyboardDismissMode={"on-drag"}
+                    keyboardShouldPersistTaps={"always"}
+                    // refreshControl={
+                    //   <RefreshControl
+                    //     refreshing={this.props.loading}
+                    //     onRefresh={this._onRefresh}
+                    //   />
+                    // }
+                    data={this.state.results2}
+                    renderItem={({ item }) => (
+                      <TouchableOpacity
+                        style={{
+                          height: 60,
+                          paddingHorizontal: 10,
+                          borderBottomColor: "#293749",
+                          borderBottomWidth: 1,
+                          flex: 1,
+                          flexDirection: "column",
+                          justifyContent: "center"
+                        }}
+                        onPress={() => (
+                          Keyboard.dismiss(),
+                          this.setModalVisible(false),
+                          this.props.doOpenCompanyModal(),
+                          this.props.doSetCompany(item)
+                        )}
+                      >
+                        <Text
+                          style={{ color: "white", textAlignVertical: "top" }}
+                        >
+                          {item.nameInEnglish} ({item.nameInArabic})
+                        </Text>
+
+                        <Text style={{ color: "#74808E" }}>
+                          {item.investorName}
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 10,
+                            color: "#B7C1CD",
+                            alignSelf: "flex-end",
+                            right: 10,
+                            bottom: 5,
+                            position: "absolute"
+                          }}
+                        >
+                          {item.status}
+                        </Text>
+                        <Text
+                          style={{
+                            color: "#74808E",
+                            alignSelf: "flex-end",
+                            right: 10,
+                            top: 5,
+                            position: "absolute"
+                          }}
+                        >
+                          {item.legalCompanyForm}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                    keyExtractor={item => {
+                      return item._id;
+                    }}
+                  />
+                </KeyboardAvoidingView>
+              </Modal>
+              <View>
+                <FlatList
+                  snapToInterval={300}
+                  bouncesZoom
+                  indicatorStyle={"white"}
+                  snapToAlignment={"center"}
+                  decelerationRate="fast"
+                  horizontal
+                  data={this.props.allCompanies}
+                  renderItem={({ item }) => (
+                    <LinearGradient
+                      colors={["transparent", "rgba(0,0,0,0.2)"]}
+                      style={{
+                        ...styles.companyCard,
+                        marginHorizontal: 10,
+                        width: 280
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "#90F6DE",
+                          fontWeight: "bold",
+                          fontSize: 23,
+                          fontFamily: "AvenirNext-DemiBold"
+                        }}
+                      >
+                        {item.nameInEnglish}
+                      </Text>
+                      <Text
+                        style={{
+                          color: "#79B0A3",
+                          fontWeight: "bold",
+                          fontSize: 16
+                        }}
+                      >
+                        {item.nameInArabic}
+                      </Text>
+                      <Text
+                        style={{
+                          color: "#CCCCCC",
+                          fontWeight: "bold",
+                          fontSize: 10,
+                          position: "absolute",
+                          top: 10,
+                          right: 10,
+                          alignSelf: "flex-end"
+                        }}
+                      >
+                        {item.legalCompanyForm}
+                      </Text>
+                      <TouchableOpacity
+                        style={{
+                          position: "absolute",
+                          bottom: 10,
+                          right: 10,
+                          alignSelf: "flex-end"
+                        }}
+                        onPress={() => (
+                          this.props.doOpenCompanyModal(),
+                          this.props.doSetCompany(item)
+                        )}
+                      >
+                        <Text style={{ color: "#cccccc" }}>View details</Text>
+                      </TouchableOpacity>
+                    </LinearGradient>
+                  )}
+                  keyExtractor={item => {
+                    return item._id;
+                  }}
+                />
+              </View>
+            </>
+        
         </ScrollView>
       </>
     );
@@ -281,9 +287,6 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  doFetchReq: token => {
-    dispatch(actions.fetchRequests(token));
-  },
   doFetchComp: () => {
     dispatch(actions.fetchAllCompanies());
   },

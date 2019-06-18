@@ -16,23 +16,14 @@ class CompanyDetails extends React.Component {
         <Text
           style={{
             color: "#DBD7DF",
-
-            fontSize: 15,
+            textAlign:'center',
+            fontSize: 23,
             fontFamily: "AvenirNext-DemiBold"
           }}
         >
-          Name in English: {this.props.selectedCompany.nameInEnglish}
+           {this.props.selectedCompany.nameInEnglish} ({this.props.selectedCompany.nameInArabic})
         </Text>
-        <Text
-          style={{
-            color: "#DBD7DF",
-
-            fontSize: 15,
-            fontFamily: "AvenirNext-DemiBold"
-          }}
-        >
-          Name in Arabic: {this.props.selectedCompany.nameInArabic}
-        </Text>
+       
         <Text
           style={{
             color: "#DBD7DF",
@@ -132,7 +123,7 @@ class CompanyDetails extends React.Component {
           }}
           onPress={() => this.props.doCloseCompanyModal()}
         >
-          <Ionicons name={"ios-close"} size={40} color={"#90F6DE"} />
+          <Ionicons name={"ios-close"} size={40} color={"#F08080"} />
         </TouchableOpacity>
       </View>
     );

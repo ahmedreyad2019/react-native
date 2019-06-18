@@ -13,7 +13,7 @@ import { LinearGradient } from "expo";
 import { connect } from "react-redux";
 import { styles } from "../styles";
 import * as actions from "../actions/index";
-
+import FloatingLabelInput from "../components/FloatingLabelInput";
 class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -33,7 +33,7 @@ class HomeScreen extends React.Component {
         >
           <LinearGradient
             style={!this.props.error ? styles.button : styles.buttonError}
-            colors={["transparent", "rgba(0,0,0,0.2)"]}
+            colors={["transparent", "rgba(0,0,0,0.3)"]}
           >
             {!this.props.loading ? (
               <Text
@@ -55,11 +55,12 @@ class HomeScreen extends React.Component {
       </View>
     );
   };
-  componentDidUpdate = () => {
+  componentWillUpdate = () => {
     if (this.props.loggedIn) {
       this.props.navigation.navigate("Dashboard");
     }
   };
+
   render() {
     return (
       <KeyboardAvoidingView
@@ -67,39 +68,40 @@ class HomeScreen extends React.Component {
           backgroundColor: "#1C2632",
           flex: 1,
           flexDirection: "column",
-          justifyContent: "center",
+          justifyContent: "space-evenly",
           alignItems: "stretch",
           padding: 30
         }}
         behavior="padding"
         enabled
       >
-        <View>
-          <TextInput
+        <View style={{}}>
+          <FloatingLabelInput
             style={styles.text}
-            placeholder="Email"
+            label="Email"
             onChangeText={text => this.setState({ email: text })}
             keyboardType="email-address"
             value={this.state.email}
-            placeholderTextColor="#8ac"
           />
 
-          <TextInput
+          <FloatingLabelInput
             style={styles.text}
-            placeholder="Password"
+            label={"password"}
             onChangeText={text => this.setState({ password: text })}
             textContentType="password"
-            secureTextEntry={true}
             value={this.state.password}
-            placeholderTextColor="#8ac"
           />
         </View>
-        {this.handleLoading()}
-        <TouchableOpacity onPress={this.handleRegister}>
-          <Text style={{ color: "#74808E" }}>
-            if you do not have an account, register here
-          </Text>
-        </TouchableOpacity>
+        <View>
+          {this.handleLoading()}
+          <TouchableOpacity
+            onPress={() => this.props.navigation.navigate("Register")}
+          >
+            <Text style={{ color: "#74808E" }}>
+              if you do not have an account, register here
+            </Text>
+          </TouchableOpacity>
+        </View>
       </KeyboardAvoidingView>
     );
   }

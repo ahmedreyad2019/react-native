@@ -2,28 +2,24 @@ import * as actionTypes from "../actionConstants/action-types";
 const intialState = {
   loggedIn: false,
   error: null,
-  token: "",
+  token: null,
   loading: false,
-  userId: "",
-  user: ""
+  userId: null,
+  user: null
 };
 export default (loginReducer = (state = intialState, action) => {
   switch (action.type) {
     case actionTypes.LOGIN:
       return {
         ...state,
-        token: action.payload.token,
-        userId: action.payload.userId,
+        token: action.token,
+        userId: action.userId,
         loggedIn: true,
   
       };
     case actionTypes.LOGOUT:
       return {
-        ...state,
-        token: '',
-        userId: '',
-        loggedIn: false,
-        user: '',
+       intialState
       };
     case actionTypes.SET_LOADING:
       return {

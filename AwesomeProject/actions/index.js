@@ -1,12 +1,13 @@
 import * as types from "../actionConstants/action-types";
-
+import { AsyncStorage } from "react-native";
+const axios = require("axios");
 export const loading = loading => {
   return {
     type: types.SET_LOADING,
     loading
   };
 };
-export const error = error => {
+export const setError = error => {
   return {
     type: types.SET_ERROR,
     error
@@ -24,10 +25,10 @@ export const setCompanies = companies => {
     companies
   };
 };
-export const setAllCompanies = companies => {
+export const setAllCompanies = allCompanies => {
   return {
     type: types.SET_ALL_COMPANIES,
-    companies
+    allCompanies
   };
 };
 export const setRequests = requests => {
@@ -47,9 +48,24 @@ export const closeCompanyModal = () => {
     type: types.CLOSE_COMPANY_MODAL
   };
 };
+export const setOrder = () => {
+  return {
+    type: types.SET_ORDER
+  };
+};
 export const openCompanyModal = () => {
   return {
     type: types.OPEN_COMPANY_MODAL
+  };
+};
+export const closeFilterModal = () => {
+  return {
+    type: types.CLOSE_FILTER_MODAL
+  };
+};
+export const openFilterModal = () => {
+  return {
+    type: types.OPEN_FILTER_MODAL
   };
 };
 export const closeDateModal = () => {
@@ -62,15 +78,24 @@ export const openDateModal = () => {
     type: types.OPEN_DATE_MODAL
   };
 };
+
 export const logout = () => {
+  return dispatch => {
+    AsyncStorage.removeItem("jwt");
+    dispatch({ type: types.LOGOUT });
+  };
+};
+export const setToken = (token, userId) => {
   return {
-    type: types.LOGOUT
+    type: types.LOGIN,
+    token,
+    userId
   };
 };
 export const login = (email, password) => {
   return dispatch => {
     dispatch(loading(true));
-    dispatch(setCompanies(null));
+
     fetch("https://serverbrogrammers.herokuapp.com/api/investors/login", {
       method: "POST",
       body: JSON.stringify({ email: email, password: password }),
@@ -80,20 +105,57 @@ export const login = (email, password) => {
     }).then(response => {
       response.json().then(data => {
         if (data.auth) {
-          dispatch({
-            type: types.LOGIN,
-            payload: {
-              token: data.token,
-              userId: data.id
-            }
+          AsyncStorage.setItem("jwt", data.token);
+          AsyncStorage.getItem("jwt").then(res => {
+            console.log(res);
           });
-        } else dispatch(error(true));
+          dispatch(setToken(data.token, data.id));
+        } else dispatch(setError(true));
         dispatch(loading(false));
       });
     });
   };
 };
 
+export const fetchCompanies = token => {
+  return dispatch => {
+    dispatch(loading(true));
+    axios
+      .get(
+        `http://serverbrogrammers.herokuapp.com/api/investors/View/ViewCompanies`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Headers": "x-access-token",
+            "x-access-token": token
+          }
+        }
+      )
+
+      .then(res => {
+        dispatch(setCompanies(res.data.data));
+        dispatch(loading(false));
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+};
+export const fetchAllCompanies = () => {
+  return dispatch => {
+    dispatch(loading(true));
+    fetch(`http://serverbrogrammers.herokuapp.com/api/company/`, {
+      method: "GET"
+    })
+      .then(response => response.json())
+      .then(response => {
+        dispatch(setAllCompanies(response.data));
+      })
+      .catch(error => {
+        dispatch(error(error));
+      });
+  };
+};
 export const fetchRequests = token => {
   return dispatch => {
     dispatch(loading(true));
@@ -113,52 +175,6 @@ export const fetchRequests = token => {
       })
       .catch(error => {
         dispatch(error(error));
-      })
-      .finally(() => {
-        dispatch(loading(false));
-      });
-  };
-};
-export const fetchCompanies = token => {
-  return dispatch => {
-    dispatch(loading());
-    fetch(
-      `http://serverbrogrammers.herokuapp.com/api/investors/View/ViewCompanies`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "x-access-token": token
-        }
-      }
-    )
-      .then(response => response.json())
-      .then(response => {
-        dispatch(setCompanies(response.data));
-      })
-      .catch(error => {
-        dispatch(error(error));
-      })
-      .finally(() => {
-        dispatch(loading(false));
-      });
-  };
-};
-export const fetchAllCompanies = () => {
-  return dispatch => {
-    dispatch(loading());
-    fetch(`http://serverbrogrammers.herokuapp.com/api/company/`, {
-      method: "GET"
-    })
-      .then(response => response.json())
-      .then(response => {
-        dispatch(setAllCompanies(response.data));
-      })
-      .catch(error => {
-        dispatch(error(error));
-      })
-      .finally(() => {
-        dispatch(loading(false));
       });
   };
 };
@@ -174,6 +190,7 @@ export const fetchProfile = (userId, token) => {
     })
       .then(response => response.json())
       .then(response => {
+        console.log(response);
         dispatch(setUser(response.data));
         dispatch(loading(false));
       })

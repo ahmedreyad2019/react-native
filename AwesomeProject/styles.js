@@ -39,15 +39,13 @@ export const styles = {
   rectangle: { width: 50, height: 5 },
 
   text: {
-    height: 47,
-    backgroundColor: "#4A5869",
+    height: 50,
     borderStyle: "solid",
-    borderColor: "#74808E",
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: 10,
+    borderBottomColor: "#74808E",
+    borderBottomWidth: 1,
+    // borderRadius: 10,
     marginBottom: 30,
-    fontSize: 20,
+    fontSize: 18,
     color: "#FFFFFF"
   },
   button: {
@@ -55,7 +53,7 @@ export const styles = {
     height: 52,
     backgroundColor: "#4FDBBA",
     borderStyle: "solid",
-    borderColor: "#204B7C",
+    borderColor: "#74808E",
     borderRadius: 40,
     borderWidth: 1,
     padding: 15,
