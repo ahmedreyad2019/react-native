@@ -5,6 +5,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  StatusBar,
   ActivityIndicator,
   Animated,
   Easing
@@ -22,9 +23,7 @@ class HomeScreen extends React.Component {
       password: ""
     };
   }
-componentDidMount=()=>{
-
-}
+  componentDidMount = () => {};
   handleLoading = () => {
     return (
       <View style={{ paddingHorizontal: 60 }}>
@@ -77,7 +76,9 @@ componentDidMount=()=>{
         behavior="padding"
         enabled
       >
-        <View style={{}}>
+        <StatusBar barStyle={"light-content"} />
+
+        <View style={{top:0}}>
           <FloatingLabelInput
             style={styles.text}
             label="Email"
@@ -114,8 +115,8 @@ const mapDispatchToProps = dispatch => ({
   doLogin: (email, password) => {
     dispatch(actions.login(email, password));
   },
-  doClear:()=>{
-    dispatch(actions.clear())
+  doClear: () => {
+    dispatch(actions.clear());
   }
 });
 export default connect(

@@ -73,150 +73,26 @@ class CompaniesScreen extends React.Component {
   renderView = () => {
     return (
       <View style={{ flex: 1, backgroundColor: "#1C2632" }}>
-        <ButtonGroup
-          selectedButtonStyle={{ backgroundColor: "#90F6DE" }}
-          selectedTextStyle={{ color: "#1C2632" }}
-          containerStyle={{ backgroundColor: "#1C2632" }}
-          buttons={["Approved", "Requested", "Create"]}
-          selectedIndex={this.state.selectedIndex}
-          onPress={event => {
-            this.setState({
-              selectedIndex: event
-            });
-          }}
-        />
-        <FlatList
-          refreshControl={
-            <RefreshControl
-              refreshing={this.props.loading}
-              onRefresh={this._onRefresh}
-            />
-          }
-          data={
-            this.state.selectedIndex === 0
-              ? this.props.companies.approved
-              : this.state.selectedIndex === 1
-              ? this.props.companies.requested
-              : []
-          }
-          renderItem={({ item }) => (
-            <LinearGradient
-              colors={["transparent", "rgba(0,0,0,0.2)"]}
-              style={styles.companyCard}
-            >
-              <Text
-                style={{
-                  color: "#90F6DE",
-                  fontWeight: "bold",
-                  fontSize: 23,
-                  fontFamily: "AvenirNext-DemiBold"
-                }}
-              >
-                {item.nameInEnglish}
-              </Text>
-              <Text
-                style={{
-                  color: "#79B0A3",
-                  fontWeight: "bold",
-                  fontSize: 16
-                }}
-              >
-                {item.nameInArabic}
-              </Text>
-              <Text
-                style={{
-                  color: "#CCCCCC",
-                  fontWeight: "bold",
-                  fontSize: 10,
-                  position: "absolute",
-                  top: 10,
-                  right: 10,
-                  alignSelf: "flex-end"
-                }}
-              >
-                {item.legalCompanyForm}
-              </Text>
-              <TouchableOpacity
-                style={{
-                  position: "absolute",
-                  bottom: 10,
-                  right: 10,
-                  alignSelf: "flex-end"
-                }}
-                onPress={() => (
-                  this.props.doOpenCompanyModal(), this.props.doSetCompany(item)
-                )}
-              >
-                <Text style={{ color: "#cccccc" }}>View details</Text>
-              </TouchableOpacity>
-            </LinearGradient>
-          )}
-          keyExtractor={item => {
-            return item._id;
-          }}
-        />
-      </View>
-    );
-  };
-
-  render() {
-    return (
-      <>
-        <StatusBar barStyle={"light-content"} />
-        <Header
-          backgroundColor={"#1C2632"}
-          centerComponent={{
-            text: "Companies",
-            style: { color: "#74808E", fontWeight: "bold", fontSize: 20 }
-          }}
-          rightComponent={
-            <Ionicons
-              name={"ios-search"}
-              onPress={() =>
-                this.setState(prevState => ({ hi: !prevState.hi }))
-              }
-              size={25}
-              color={"#74808E"}
-            />
-          }
-        />
-
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={this.props.companyModalVisible}
-          onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
-          }}
-        >
-          <CompanyDetials />
-        </Modal>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={this.props.filterModalVisible}
-          onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
-          }}
-        >
-          <Filter />
-        </Modal>
-        <Modal
+            <Modal
           animationType="fade"
-          transparent={false}
+          transparent={true}
           visible={this.state.hi}
           onRequestClose={() => {
             Alert.alert("Modal has been closed.");
           }}
         >
           <KeyboardAvoidingView
-            style={{ flex: 1, backgroundColor: "#1C2632", marginTop: 20 }}
-            behavior="padding"
-            enabled
-          >
-            <SearchBar
-              ref={search => (this.search = search)}
-              containerStyle={{ backgroundColor: "#1C2632" }}
+                style={{
+                  ...styles.CompanyDetails,
+                  paddingHorizontal: 0,
+                  paddingTop: 30
+                }}
+                behavior="padding"
+                enabled
+              >
+                <SearchBar
+                  ref={search => (this.search = search)}
+                  containerStyle={{ backgroundColor: "#3D4858" }}
               platform="ios"
               placeholder="Type Here..."
               onChangeText={this.updateSearch}
@@ -293,6 +169,137 @@ class CompaniesScreen extends React.Component {
             />
           </KeyboardAvoidingView>
         </Modal>
+        <ButtonGroup
+          selectedButtonStyle={{ backgroundColor: "#90F6DE" }}
+          selectedTextStyle={{ color: "#1C2632" }}
+          containerStyle={{ backgroundColor: "#1C2632" }}
+          buttons={["Approved", "Requested", "Create"]}
+          selectedIndex={this.state.selectedIndex}
+          onPress={event => {
+            this.setState({
+              selectedIndex: event
+            });
+          }}
+        />
+
+        <FlatList
+          refreshControl={
+            <RefreshControl
+              refreshing={this.props.loading}
+              onRefresh={this._onRefresh}
+            />
+          }
+          data={
+            this.state.selectedIndex === 0
+              ? this.props.companies.approved
+              : this.state.selectedIndex === 1
+              ? this.props.companies.requested
+              : []
+          }
+          renderItem={({ item }) => (
+            <LinearGradient
+              colors={["transparent", "rgba(0,0,0,0.2)"]}
+              style={styles.companyCard}
+            >
+              <Text
+                style={{
+                  color: "#90F6DE",
+                  fontWeight: "bold",
+                  fontSize: 23,
+                  fontFamily: "AvenirNext-DemiBold"
+                }}
+              >
+                {item.nameInEnglish}
+              </Text>
+              <Text
+                style={{
+                  color: "#79B0A3",
+                  fontWeight: "bold",
+                  fontSize: 16
+                }}
+              >
+                {item.nameInArabic}
+              </Text>
+              <Text
+                style={{
+                  color: "#CCCCCC",
+                  fontWeight: "bold",
+                  fontSize: 10,
+                  position: "absolute",
+                  top: 10,
+                  right: 10,
+                  alignSelf: "flex-end"
+                }}
+              >
+                {item.legalCompanyForm}
+              </Text>
+              <TouchableOpacity
+                style={{
+                  position: "absolute",
+                  bottom: 10,
+                  right: 10,
+                  alignSelf: "flex-end"
+                }}
+                onPress={() => (
+                  this.props.doOpenCompanyModal(), this.props.doSetCompany(item)
+                )}
+              >
+                <Text style={{ color: "#cccccc" }}>View details</Text>
+              </TouchableOpacity>
+            </LinearGradient>
+          )}
+          keyExtractor={item => {
+            return item._id;
+          }}
+        />
+        
+      </View>
+    );
+  };
+
+  render() {
+    return (
+      <>
+
+        <Header
+          backgroundColor={"#1C2632"}
+          centerComponent={{
+            text: "Companies",
+            style: { color: "#74808E", fontWeight: "bold", fontSize: 20 }
+          }}
+          rightComponent={
+            <Ionicons
+              name={"ios-search"}
+              onPress={() =>
+                this.setState(prevState => ({ hi: !prevState.hi }))
+              }
+              size={25}
+              color={"#74808E"}
+            />
+          }
+        />
+        <StatusBar barStyle={"light-content"} />
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.props.companyModalVisible}
+          onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+          }}
+        >
+          <CompanyDetials />
+        </Modal>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.props.filterModalVisible}
+          onRequestClose={() => {
+            Alert.alert("Modal has been closed.");
+          }}
+        >
+          <Filter />
+        </Modal>
+    
 
         {this.renderView()}
         <View>

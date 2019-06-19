@@ -58,7 +58,7 @@ class LinksScreen extends React.Component {
     const { user } = this.props;
     return (
       <View style={{ flex: 1, backgroundColor: "#1C2632" }}>
-        <StatusBar barStyle={"dark-content"} />
+        <StatusBar barStyle={"light-content"} />
         <Header
           backgroundColor={"#1C2632"}
           centerComponent={{

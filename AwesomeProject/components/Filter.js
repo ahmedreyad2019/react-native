@@ -3,7 +3,8 @@ import React from "react";
 import {
   View,
   PickerIOS,
-  Text,Easing,
+  Text,
+  Easing,
   TouchableOpacity,
   Animated
 } from "react-native";
@@ -20,25 +21,26 @@ class Filter extends React.Component {
       keys: [],
       selectedKey: ""
     };
-    this.RotateValueHolder = new Animated.Value(0);
+    this.RotateValueHolder = new Animated.Value(this.props.order==='asc'?0:1);
   }
 
   StartImageRotateFunction() {
-    this.RotateValueHolder.setValue(this.props.order==='asc'?0:1);
+    this.RotateValueHolder.setValue(this.props.order === "asc" ? 0 : 1);
 
     Animated.timing(this.RotateValueHolder, {
-      toValue: this.props.order==='asc'?1:0,
+      toValue: this.props.order === "asc" ? 1 : 0,
       duration: 500,
+      easing: Easing.cubic
     }).start();
   }
 
   handlePassword = () => {
     this.props.doSetOrder();
     this.handleSort();
-    this.StartImageRotateFunction()
+    this.StartImageRotateFunction();
   };
   handleAttributes = () => {
-    const { requested, approved } = this.props.companies;
+    const { requested } = this.props.companies;
     this.setState({ keys: Object.keys(requested[0]) });
   };
   handleSort = () => {
@@ -57,7 +59,6 @@ class Filter extends React.Component {
 
   componentDidMount = () => {
     this.handleAttributes();
-  
   };
   compare = (key, order = "asc") => {
     return function(item1, item2) {
@@ -80,9 +81,9 @@ class Filter extends React.Component {
       inputRange: [0, 1],
       outputRange: ["0deg", "180deg"]
     });
+   
     const labelStyle = {
       position: "absolute",
-      color: "#74808E",
       top: 0,
       left: 15,
       transform: [{ rotate: RotateData }]
@@ -104,14 +105,13 @@ class Filter extends React.Component {
             borderBottomColor: "#74808E"
           }}
         />
-        <Animated.View           style={labelStyle}
->
-        <Ionicons
-          size={40}
-          color={"#F08080"}
-          name={this.state.iconName}
-          onPress={this.handlePassword}
-        />
+        <Animated.View style={labelStyle}>
+          <Ionicons
+            size={40}
+            color={"#74808E"}
+            name={this.state.iconName}
+            onPress={this.handlePassword}
+          />
         </Animated.View>
         <PickerIOS
           itemStyle={{ color: "white" }}
@@ -131,7 +131,7 @@ class Filter extends React.Component {
             right: 15
           }}
           onPress={() => {
-            this.props.doCloseFilterModal(), this.handleSort();
+            this.props.doCloseFilterModal()
           }}
         >
           <Ionicons name={"ios-close"} size={40} color={"#F08080"} />
