@@ -75,12 +75,7 @@ class SearchModal extends Component {
         <FlatList
           keyboardDismissMode={"on-drag"}
           keyboardShouldPersistTaps={"always"}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.props.loading}
-              onRefresh={this._onRefresh}
-            />
-          }
+       
           data={this.state.results2}
           renderItem={({ item }) => (
             <TouchableOpacity

@@ -27,7 +27,6 @@ class CompaniesScreen extends React.Component {
 
   componentDidMount() {
     this.makeRemoteRequest();
-    console.log(this.props.navigation.state.routeName);
   }
   makeRemoteRequest = () => {
     this.props.doFetchReq();

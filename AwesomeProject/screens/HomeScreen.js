@@ -45,37 +45,36 @@ class HomeScreen extends React.Component {
   handleLoading = () => {
     const RotateData = this.RotateValueHolder.interpolate({
       inputRange: [0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2],
-      outputRange: [0, -30, 0, 25, 0, -20, 0, 15, 0, -10, 0]
+      outputRange: [0, -20, 0, 20, 0, -15, 0, 10, 0, -15, 0]
     });
-
     const labelStyle = {
       transform: [{ translateX: RotateData }]
     };
     return (
-      <View style={{ paddingHorizontal: 60 }}>
-        <Animated.View style={labelStyle}>
-          <TouchableOpacity
-            onPress={() =>
-              this.props.doLogin(this.state.email, this.state.password)
-            }
+      <View style={{width:'70%'}}>
+      <Animated.View style={labelStyle}>
+        <TouchableOpacity
+          onPress={() =>
+            this.props.doLogin(this.state.email, this.state.password)
+          }
+        >
+          <LinearGradient
+            style={styles.button}
+            colors={["transparent", "rgba(0,0,0,0.3)"]}
           >
-            <LinearGradient
-              style={styles.button}
-              colors={["transparent", "rgba(0,0,0,0.3)"]}
-            >
-              {!this.props.loading ? (
-                <Text style={{ color: "#FFF" }}>Sign in</Text>
-              ) : (
-                <ActivityIndicator
-                  animating={this.props.loading}
-                  size="small"
-                  color={"#FFF"}
-                />
-              )}
-            </LinearGradient>
-          </TouchableOpacity>
-        </Animated.View>
-      </View>
+            {!this.props.loading ? (
+              <Text style={{ color: "#FFF" }}>Sign in</Text>
+            ) : (
+              <ActivityIndicator
+                animating={this.props.loading}
+                size="small"
+                color={"#FFF"}
+              />
+            )}
+          </LinearGradient>
+        </TouchableOpacity>
+      </Animated.View>
+    </View>
     );
   };
   componentWillUpdate = () => {
@@ -126,7 +125,7 @@ class HomeScreen extends React.Component {
         >
           <StatusBar barStyle={"light-content"} />
 
-          <View>
+          <View style={{flexDirection:'column',alignItems:"center"}}>
             {this.handleLoading()}
             <TouchableOpacity
               onPress={() => this.props.navigation.navigate("Register")}

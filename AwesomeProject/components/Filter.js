@@ -26,10 +26,10 @@ class Filter extends React.Component {
   StartImageRotateFunction() {
     this.RotateValueHolder.setValue(this.props.order === "asc" ? 0 : 1);
 
-    Animated.timing(this.RotateValueHolder, {
+    Animated.spring(this.RotateValueHolder, {
       toValue: this.props.order === "asc" ? 1 : 0,
-      duration: 500,
-      easing: Easing.exp
+    friction:5
+      
     }).start();
   }
 

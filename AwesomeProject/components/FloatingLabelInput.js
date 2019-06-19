@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import {
   View,
-  Text,
+  Text,Easing,
   TextInput,
   Animated,
   TouchableOpacity
@@ -23,7 +23,8 @@ class FloatingLabelInput extends Component {
   componentDidUpdate = () => {
     Animated.timing(this._animatedIsFocused, {
       toValue: this.state.isFocused || this.props.value ? 1 : 0,
-      duration: 200
+      duration: 200,
+      easing:Easing.linear
     }).start();
   };
   handleFocus = () => {
@@ -52,7 +53,7 @@ class FloatingLabelInput extends Component {
       }),
       fontSize: this._animatedIsFocused.interpolate({
         inputRange: [0, 1],
-        outputRange: [20, 14]
+        outputRange: [18, 16]
       }),
       color: "#74808E"
     };
