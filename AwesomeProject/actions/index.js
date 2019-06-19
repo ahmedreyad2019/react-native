@@ -53,6 +53,12 @@ export const setOrder = () => {
     type: types.SET_ORDER
   };
 };
+export const setSource = (source) => {
+  return {
+    type: types.SET_SOURCE,
+    source
+  };
+};
 export const openCompanyModal = () => {
   return {
     type: types.OPEN_COMPANY_MODAL
@@ -76,6 +82,16 @@ export const closeDateModal = () => {
 export const openDateModal = () => {
   return {
     type: types.OPEN_DATE_MODAL
+  };
+};
+export const closeSearchModal = () => {
+  return {
+    type: types.CLOSE_SEARCH_MODAL
+  };
+};
+export const openSearchModal = () => {
+  return {
+    type: types.OPEN_SEARCH_MODAL
   };
 };
 export const clear = () => {

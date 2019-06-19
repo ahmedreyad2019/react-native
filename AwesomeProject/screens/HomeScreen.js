@@ -1,10 +1,10 @@
 import React from "react";
 import {
-  TextInput,
   KeyboardAvoidingView,
   Text,
   TouchableOpacity,
   View,
+  Vibration,
   StatusBar,
   ActivityIndicator,
   Animated,
@@ -22,37 +22,59 @@ class HomeScreen extends React.Component {
       email: "",
       password: ""
     };
+    this.RotateValueHolder = new Animated.Value(0);
   }
-  componentDidMount = () => {};
+
+  StartImageRotateFunction() {
+    this.RotateValueHolder.setValue(0);
+
+    Animated.timing(this.RotateValueHolder, {
+      toValue: 2,
+      duration: 500,
+      easing: Easing.quad
+    }).start();
+  }
+
+  componentDidUpdate = () => {
+    if (this.props.error) {
+      Vibration.vibrate([100])
+      this.StartImageRotateFunction();
+      this.props.doError(false);
+    }
+  };
   handleLoading = () => {
+    const RotateData = this.RotateValueHolder.interpolate({
+      inputRange: [0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2],
+      outputRange: [0, -30, 0, 25, 0, -20, 0, 15, 0, -10, 0]
+    });
+
+    const labelStyle = {
+      transform: [{ translateX: RotateData }]
+    };
     return (
       <View style={{ paddingHorizontal: 60 }}>
-        <TouchableOpacity
-          onPress={() =>
-            this.props.doLogin(this.state.email, this.state.password)
-          }
-        >
-          <LinearGradient
-            style={!this.props.error ? styles.button : styles.buttonError}
-            colors={["transparent", "rgba(0,0,0,0.3)"]}
+        <Animated.View style={labelStyle}>
+          <TouchableOpacity
+            onPress={() =>
+              this.props.doLogin(this.state.email, this.state.password)
+            }
           >
-            {!this.props.loading ? (
-              <Text
-                style={
-                  !this.props.error ? { color: "#FFF" } : { color: "#FF0000" }
-                }
-              >
-                Sign in
-              </Text>
-            ) : (
-              <ActivityIndicator
-                animating={this.props.loading}
-                size="small"
-                color={"#FFF"}
-              />
-            )}
-          </LinearGradient>
-        </TouchableOpacity>
+            <LinearGradient
+              style={styles.button}
+              colors={["transparent", "rgba(0,0,0,0.3)"]}
+            >
+              {!this.props.loading ? (
+                <Text style={{ color: "#FFF" }}>Sign in</Text>
+              ) : (
+                <ActivityIndicator
+                  animating={this.props.loading}
+                  size="small"
+                  color={"#FFF"}
+                />
+              )}
+            </LinearGradient>
+          </TouchableOpacity>
+        </Animated.View>
       </View>
     );
   };
@@ -64,21 +86,15 @@ class HomeScreen extends React.Component {
 
   render() {
     return (
-      <KeyboardAvoidingView
-        style={{
-          backgroundColor: "#1C2632",
-          flex: 1,
-          flexDirection: "column",
-          justifyContent: "space-evenly",
-          alignItems: "stretch",
-          padding: 30
-        }}
-        behavior="padding"
-        enabled
-      >
-        <StatusBar barStyle={"light-content"} />
-
-        <View style={{top:0}}>
+      <>
+        <View
+          style={{
+            backgroundColor: "#1C2632",
+            flex: 1,
+            padding: 30,
+            paddingTop: 100
+          }}
+        >
           <FloatingLabelInput
             style={styles.text}
             label="Email"
@@ -95,17 +111,33 @@ class HomeScreen extends React.Component {
             value={this.state.password}
           />
         </View>
-        <View>
-          {this.handleLoading()}
-          <TouchableOpacity
-            onPress={() => this.props.navigation.navigate("Register")}
-          >
-            <Text style={{ color: "#74808E" }}>
-              if you do not have an account, register here
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView>
+        <KeyboardAvoidingView
+          style={{
+            backgroundColor: "#1C2632",
+            flex: 1,
+            flexDirection: "column",
+            justifyContent: "space-evenly",
+            alignItems: "stretch",
+            padding: 30,
+            paddingTop: 0
+          }}
+          behavior="padding"
+          enabled
+        >
+          <StatusBar barStyle={"light-content"} />
+
+          <View>
+            {this.handleLoading()}
+            <TouchableOpacity
+              onPress={() => this.props.navigation.navigate("Register")}
+            >
+              <Text style={{ color: "#74808E" }}>
+                if you do not have an account, register here
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      </>
     );
   }
 }
@@ -114,6 +146,9 @@ const mapStateToProps = state =>
 const mapDispatchToProps = dispatch => ({
   doLogin: (email, password) => {
     dispatch(actions.login(email, password));
+  },
+  doError: error => {
+    dispatch(actions.setError(error));
   },
   doClear: () => {
     dispatch(actions.clear());

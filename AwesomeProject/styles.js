@@ -6,7 +6,7 @@ export const styles = {
     width: "90%",
     borderRadius: 20,
     shadowOpacity: 0.7,
-    shadowRadius: 3,
+    shadowRadius: 10,
     shadoOffset: {
       width: 0,
       height: 1

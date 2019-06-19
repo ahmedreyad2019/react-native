@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, DatePickerIOS, TouchableOpacity, Text } from "react-native";
+import { View, DatePickerIOS } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import * as actions from "../actions/index";
 import { connect } from "react-redux";
@@ -12,28 +12,28 @@ class DatePicker extends Component {
   }
 
   render() {
-      
     return (
       <View style={{ flex: 1, flexDirection: "column-reverse" }}>
-       <View
-        style={{
-          ...styles.CompanyDetails,
-          padding: 0,height:250,
-          position: "absolute",
-          bottom: 0,
-        }}
-      >
-                 <View
+        <View
           style={{
-            height: 40,
-            borderBottomWidth: .3,
-            borderBottomColor: "#74808E"
+            ...styles.CompanyDetails,
+            padding: 0,
+            height: 250,
+            position: "absolute",
+            bottom: 0
           }}
-        />
+        >
+          <View
+            style={{
+              height: 40,
+              borderBottomWidth: 0.3,
+              borderBottomColor: "#74808E"
+            }}
+          />
           <DatePickerIOS
             mode={"date"}
             date={new Date(this.props.user.dob)}
-            style={{color:'white'}}
+            style={{ color: "white" }}
             onDateChange={newDate => this.setState({ chosenDate: newDate })}
           />
 

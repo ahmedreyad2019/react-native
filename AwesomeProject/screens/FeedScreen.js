@@ -3,28 +3,26 @@ import {
   ScrollView,
   FlatList,
   Alert,
-  KeyboardAvoidingView,
-  ActivityIndicator,
   TouchableOpacity,
   RefreshControl,
   Text,
-  TouchableHighlight,
   StatusBar,
   Modal,
-  Keyboard,
   View
 } from "react-native";
-import { Header, SearchBar } from "react-native-elements";
+import { Header } from "react-native-elements";
 import { styles } from "../styles";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { LinearGradient } from "expo";
 import { connect } from "react-redux";
 import * as actions from "../actions/index";
 import CompanyDetials from "../components/CompanyDetails";
+import SearchModal from "../components/SearchModal";
 
 class FeedScreen extends React.Component {
   componentDidMount() {
     this.props.doFetchComp();
+    console.log(this.props.navigation.state.routeName);
   }
 
   constructor(props) {
@@ -40,29 +38,11 @@ class FeedScreen extends React.Component {
   _onRefresh = () => {
     this.props.doFetchComp();
   };
-  updateSearch = text => {
-    var companies = this.props.allCompanies;
 
-    companies = companies
-      .filter(function(company) {
-        return (
-          company.nameInEnglish.toLowerCase().includes(text.toLowerCase()) ||
-          company.nameInArabic.toLowerCase().includes(text.toLowerCase()) ||
-          company.investorName.toLowerCase().includes(text.toLowerCase())
-        );
-      })
-      .map(function(country) {
-        return country;
-      });
-
-    this.setState({ results2: companies, search: text });
-  };
-  setModalVisible(visible) {
-    this.setState({ hi: visible });
-  }
   render() {
     return (
-      <>
+      
+       <View style={{ flex: 1, backgroundColor: "#1C2632" }}>
         <Header
           backgroundColor={"#1C2632"}
           centerComponent={{
@@ -72,16 +52,22 @@ class FeedScreen extends React.Component {
           rightComponent={
             <Ionicons
               name={"ios-search"}
-              onPress={() => {
-                console.log(this.props.allCompanies[0]);
-                this.setState(prevState => ({ hi: !prevState.hi }));
-              }}
+              onPress={() => 
+                (this.props.doOpenSearchModal(),this.props.doSetSource('FeedScreen'))
+              }
               size={20}
               color={"#74808E"}
             />
           }
         />
-
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={this.props.searchModalVisible}
+         key={2}
+        >
+          <SearchModal  key={4}/>
+        </Modal>
         <ScrollView
           bouncesZoom={true}
           pagingEnabled={true}
@@ -107,105 +93,7 @@ class FeedScreen extends React.Component {
                 Electronic Journal
               </Text>
             </View>
-            <Modal
-              animationType="fade"
-              transparent={true}
-              visible={this.state.hi}
-              onRequestClose={() => {
-                Alert.alert("Modal has been closed.");
-              }}
-            >
-              <KeyboardAvoidingView
-                style={{
-                  ...styles.CompanyDetails,
-                  paddingHorizontal: 0,
-                  paddingTop: 30
-                }}
-                behavior="padding"
-                enabled
-              >
-                <SearchBar
-                  ref={search => (this.search = search)}
-                  containerStyle={{ backgroundColor: "#3D4858" }}
-                  platform="ios"
-                  placeholder="Type Here..."
-                  onChangeText={this.updateSearch}
-                  value={this.state.search}
-                  inputContainerStyle={{ height: 20 }}
-                  onCancel={() => {
-                    this.setModalVisible(false);
-                  }}
-                  returnKeyType={"search"}
-                  autoFocus={true}
-                />
-                <FlatList
-                  keyboardDismissMode={"on-drag"}
-                  keyboardShouldPersistTaps={"always"}
-                  // refreshControl={
-                  //   <RefreshControl
-                  //     refreshing={this.props.loading}
-                  //     onRefresh={this._onRefresh}
-                  //   />
-                  // }
-                  data={this.state.results2}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity
-                      style={{
-                        height: 60,
-                        paddingHorizontal: 10,
-                        borderBottomColor: "#293749",
-                        borderBottomWidth: 1,
-                        flex: 1,
-                        flexDirection: "column",
-                        justifyContent: "center"
-                      }}
-                      onPress={() => (
-                        Keyboard.dismiss(),
-                        this.setModalVisible(false),
-                        this.props.doOpenCompanyModal(),
-                        this.props.doSetCompany(item)
-                      )}
-                    >
-                      <Text
-                        style={{ color: "white", textAlignVertical: "top" }}
-                      >
-                        {item.nameInEnglish} ({item.nameInArabic})
-                      </Text>
 
-                      <Text style={{ color: "#74808E" }}>
-                        {item.investorName}
-                      </Text>
-                      <Text
-                        style={{
-                          fontSize: 10,
-                          color: "#B7C1CD",
-                          alignSelf: "flex-end",
-                          right: 10,
-                          bottom: 5,
-                          position: "absolute"
-                        }}
-                      >
-                        {item.status}
-                      </Text>
-                      <Text
-                        style={{
-                          color: "#74808E",
-                          alignSelf: "flex-end",
-                          right: 10,
-                          top: 5,
-                          position: "absolute"
-                        }}
-                      >
-                        {item.legalCompanyForm}
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                  keyExtractor={item => {
-                    return item._id;
-                  }}
-                />
-              </KeyboardAvoidingView>
-            </Modal>
             <Modal
               animationType="slide"
               transparent={true}
@@ -289,7 +177,7 @@ class FeedScreen extends React.Component {
             </View>
           </>
         </ScrollView>
-      </>
+        </View>
     );
   }
 }
@@ -297,7 +185,9 @@ const mapStateToProps = state => {
   return {
     allCompanies: state.companyReducer.allCompanies,
     loading: state.loginReducer.loading,
-    companyModalVisible: state.companyReducer.companyModalVisible
+    companyModalVisible: state.companyReducer.companyModalVisible,
+    searchModalVisible: state.companyReducer.searchModalVisible,
+    source:state.companyReducer.source
   };
 };
 
@@ -310,6 +200,12 @@ const mapDispatchToProps = dispatch => ({
   },
   doOpenCompanyModal: () => {
     dispatch(actions.openCompanyModal());
+  },
+  doOpenSearchModal: () => {
+    dispatch(actions.openSearchModal());
+  },
+  doSetSource: (source) => {
+    dispatch(actions.setSource(source));
   }
 });
 export default connect(

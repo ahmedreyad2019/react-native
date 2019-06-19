@@ -3,7 +3,6 @@ import React from "react";
 import {
   View,
   PickerIOS,
-  Text,
   Easing,
   TouchableOpacity,
   Animated
@@ -30,7 +29,7 @@ class Filter extends React.Component {
     Animated.timing(this.RotateValueHolder, {
       toValue: this.props.order === "asc" ? 1 : 0,
       duration: 500,
-      easing: Easing.cubic
+      easing: Easing.exp
     }).start();
   }
 

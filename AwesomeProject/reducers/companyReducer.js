@@ -8,8 +8,10 @@ const initialState = {
   selectedCompany: "",
   companyModalVisible: false,
   filterModalVisible: false,
+  searchModalVisible: false,
   dateModalVisible: false,
-  order: "asc"
+  order: "asc",
+  source:'feed'
 };
 export default (companyReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -47,6 +49,11 @@ export default (companyReducer = (state = initialState, action) => {
         ...state,
         order: state.order === "asc" ? "desc" : "asc"
       };
+    case actionTypes.SET_SOURCE:
+      return {
+        ...state,
+        source:action.source
+      };
     case actionTypes.OPEN_COMPANY_MODAL:
       return {
         ...state,
@@ -71,6 +78,16 @@ export default (companyReducer = (state = initialState, action) => {
       return {
         ...state,
         dateModalVisible: true
+      };
+    case actionTypes.CLOSE_SEARCH_MODAL:
+      return {
+        ...state,
+        searchModalVisible: false
+      };
+    case actionTypes.OPEN_SEARCH_MODAL:
+      return {
+        ...state,
+        searchModalVisible: true
       };
     default:
       return state;
