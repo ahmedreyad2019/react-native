@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import {
   View,
-  Text,Easing,
+  Text,
+  Easing,
   TextInput,
   Animated,
   TouchableOpacity
@@ -22,9 +23,9 @@ class FloatingLabelInput extends Component {
   };
   componentDidUpdate = () => {
     Animated.timing(this._animatedIsFocused, {
-      toValue: this.state.isFocused || this.props.value ? 1 : 0,
+      toValue: this.state.isFocused || this.props.value !== "" ? 1 : 0,
       duration: 200,
-      easing:Easing.linear
+      easing: Easing.linear
     }).start();
   };
   handleFocus = () => {
@@ -69,6 +70,8 @@ class FloatingLabelInput extends Component {
           <Animated.Text style={labelStyle}>{label}</Animated.Text>
           <TextInput
             {...props}
+            spellCheck={false}
+            returnKeyType={"next"}
             secureTextEntry={
               !this.state.passwordVisible &&
               this.props.textContentType === "password"

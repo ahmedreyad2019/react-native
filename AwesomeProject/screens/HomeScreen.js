@@ -37,7 +37,7 @@ class HomeScreen extends React.Component {
 
   componentDidUpdate = () => {
     if (this.props.error) {
-      Vibration.vibrate([100])
+      Vibration.vibrate([100]);
       this.StartImageRotateFunction();
       this.props.doError(false);
     }
@@ -51,30 +51,30 @@ class HomeScreen extends React.Component {
       transform: [{ translateX: RotateData }]
     };
     return (
-      <View style={{width:'70%'}}>
-      <Animated.View style={labelStyle}>
-        <TouchableOpacity
-          onPress={() =>
-            this.props.doLogin(this.state.email, this.state.password)
-          }
-        >
-          <LinearGradient
-            style={styles.button}
-            colors={["transparent", "rgba(0,0,0,0.3)"]}
+      <View style={{ width: "70%" }}>
+        <Animated.View style={labelStyle}>
+          <TouchableOpacity
+            onPress={() =>
+              this.props.doLogin(this.state.email, this.state.password)
+            }
           >
-            {!this.props.loading ? (
-              <Text style={{ color: "#FFF" }}>Sign in</Text>
-            ) : (
-              <ActivityIndicator
-                animating={this.props.loading}
-                size="small"
-                color={"#FFF"}
-              />
-            )}
-          </LinearGradient>
-        </TouchableOpacity>
-      </Animated.View>
-    </View>
+            <LinearGradient
+              style={styles.button}
+              colors={["transparent", "rgba(0,0,0,0.3)"]}
+            >
+              {!this.props.loading ? (
+                <Text style={{ color: "#FFF" }}>Sign in</Text>
+              ) : (
+                <ActivityIndicator
+                  animating={this.props.loading}
+                  size="small"
+                  color={"#FFF"}
+                />
+              )}
+            </LinearGradient>
+          </TouchableOpacity>
+        </Animated.View>
+      </View>
     );
   };
   componentWillUpdate = () => {
@@ -95,6 +95,7 @@ class HomeScreen extends React.Component {
           }}
         >
           <FloatingLabelInput
+            autoCapitalize={"none"}
             style={styles.text}
             label="Email"
             onChangeText={text => this.setState({ email: text })}
@@ -113,19 +114,16 @@ class HomeScreen extends React.Component {
         <KeyboardAvoidingView
           style={{
             backgroundColor: "#1C2632",
-            flex: 1,
-            flexDirection: "column",
-            justifyContent: "space-evenly",
-            alignItems: "stretch",
-            padding: 30,
-            paddingTop: 0
+            flex: 0.8,
+
+            padding: 30
           }}
           behavior="padding"
           enabled
         >
           <StatusBar barStyle={"light-content"} />
 
-          <View style={{flexDirection:'column',alignItems:"center"}}>
+          <View style={{ flexDirection: "column", alignItems: "center" }}>
             {this.handleLoading()}
             <TouchableOpacity
               onPress={() => this.props.navigation.navigate("Register")}

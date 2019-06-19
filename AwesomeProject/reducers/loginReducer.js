@@ -14,12 +14,19 @@ export default (loginReducer = (state = intialState, action) => {
         ...state,
         token: action.token,
         userId: action.userId,
-        loggedIn: true,
-  
+        loggedIn: true
+      };
+    case actionTypes.SIGN_UP:
+      return {
+        ...state,
+        token: action.token,
+        userId: action.userId,
+        loggedIn: true
+
       };
     case actionTypes.LOGOUT:
       return {
-       intialState
+        intialState
       };
     case actionTypes.SET_LOADING:
       return {

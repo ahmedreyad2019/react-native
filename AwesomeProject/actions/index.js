@@ -53,7 +53,7 @@ export const setOrder = () => {
     type: types.SET_ORDER
   };
 };
-export const setSource = (source) => {
+export const setSource = source => {
   return {
     type: types.SET_SOURCE,
     source
@@ -114,6 +114,13 @@ export const setToken = (token, userId) => {
     userId
   };
 };
+export const setSignUp = token => {
+  return {
+    type: types.SIGN_UP,
+    token,
+    userId
+  };
+};
 export const login = (email, password) => {
   return dispatch => {
     dispatch(loading(true));
@@ -136,6 +143,31 @@ export const login = (email, password) => {
               });
               dispatch(setToken(data.token, data.id));
             } else dispatch(setError(true));
+            dispatch(loading(false));
+          });
+        })
+      );
+  };
+};
+export const signUp = user => {
+  return dispatch => {
+    dispatch(loading(true));
+
+    AsyncStorage.getAllKeys()
+      .then(AsyncStorage.multiRemove)
+      .then(
+        fetch("http://serverbrogrammers.herokuapp.com/api/investors/register", {
+          method: "POST",
+          body: JSON.stringify(user),
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }).then(response => {
+          response.json().then(data => {
+            console.log(data);
+            if (data.auth) {
+              dispatch(setSignUp(data.token, data.id));
+            }
             dispatch(loading(false));
           });
         })

@@ -18,3 +18,4 @@ export const CLOSE_SEARCH_MODAL='CLOSE_SEARCH_MODAL'
 export const OPEN_SEARCH_MODAL='OPEN_SEARCH_MODAL'
 export const SET_ORDER='SET_ORDER'
 export const SET_SOURCE='SET_SOURCE'
+export const SIGN_UP="SIGN_UP"

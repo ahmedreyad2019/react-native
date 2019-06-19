@@ -43,7 +43,7 @@ export const styles = {
     borderBottomColor: "#74808E",
     borderBottomWidth: 1,
     // borderRadius: 10,
-    marginBottom: 30,
+    marginBottom: 20,
     fontSize: 18,
     color: "#FFFFFF"
   },
