@@ -1,7 +1,7 @@
 import * as actionTypes from "../actionConstants/action-types";
 const intialState = {
   loggedIn: false,
-  error: null,
+  error: false,
   token: null,
   loading: false,
   userId: null,

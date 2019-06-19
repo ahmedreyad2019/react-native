@@ -23,6 +23,7 @@ import * as actions from "../actions/index";
 import CompanyDetials from "../components/CompanyDetails";
 import Filter from "../components/Filter";
 import { LinearGradient } from "expo";
+import { throwStatement } from "@babel/types";
 class CompaniesScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -45,10 +46,8 @@ class CompaniesScreen extends React.Component {
     this.makeRemoteRequest();
   }
   makeRemoteRequest = () => {
-    AsyncStorage.getItem("jwt").then(res => {
-      this.props.doFetchReq(res);
-      this.props.doFetchComp(res);
-    });
+    this.props.doFetchReq();
+    this.props.doFetchComp();
   };
 
   updateSearch = text => {
@@ -72,12 +71,6 @@ class CompaniesScreen extends React.Component {
     this.makeRemoteRequest();
   };
   renderView = () => {
-    const fbObject = this.props.companies.approved;
-    const newArr = Object.keys(fbObject).map(key => {
-      fbObject[key]._id = key;
-      return fbObject[key];
-    });
-    
     return (
       <View style={{ flex: 1, backgroundColor: "#1C2632" }}>
         <ButtonGroup
@@ -101,7 +94,7 @@ class CompaniesScreen extends React.Component {
           }
           data={
             this.state.selectedIndex === 0
-              ? newArr
+              ? this.props.companies.approved
               : this.state.selectedIndex === 1
               ? this.props.companies.requested
               : []
@@ -337,11 +330,11 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  doFetchReq: token => {
-    dispatch(actions.fetchRequests(token));
+  doFetchReq: () => {
+    dispatch(actions.fetchRequests());
   },
-  doFetchComp: token => {
-    dispatch(actions.fetchCompanies(token));
+  doFetchComp: () => {
+    dispatch(actions.fetchCompanies());
   },
   doSetCompany: company => {
     dispatch(actions.selectCompany(company));
@@ -349,8 +342,8 @@ const mapDispatchToProps = dispatch => ({
   doSetCompanies: company => {
     dispatch(actions.setCompanies(company));
   },
-  doSetRequests: company => {
-    dispatch(actions.setRequests(company));
+  doSetRequests: () => {
+    dispatch(actions.setRequests());
   },
   doOpenCompanyModal: () => {
     dispatch(actions.openCompanyModal());

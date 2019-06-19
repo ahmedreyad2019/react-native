@@ -3,7 +3,7 @@ import React from "react";
 import {
   View,
   PickerIOS,
-  Text,
+  Text,Easing,
   TouchableOpacity,
   Animated
 } from "react-native";
@@ -20,10 +20,22 @@ class Filter extends React.Component {
       keys: [],
       selectedKey: ""
     };
+    this.RotateValueHolder = new Animated.Value(0);
   }
+
+  StartImageRotateFunction() {
+    this.RotateValueHolder.setValue(this.props.order==='asc'?0:1);
+
+    Animated.timing(this.RotateValueHolder, {
+      toValue: this.props.order==='asc'?1:0,
+      duration: 500,
+    }).start();
+  }
+
   handlePassword = () => {
     this.props.doSetOrder();
     this.handleSort();
+    this.StartImageRotateFunction()
   };
   handleAttributes = () => {
     const { requested, approved } = this.props.companies;
@@ -45,6 +57,7 @@ class Filter extends React.Component {
 
   componentDidMount = () => {
     this.handleAttributes();
+  
   };
   compare = (key, order = "asc") => {
     return function(item1, item2) {
@@ -61,43 +74,51 @@ class Filter extends React.Component {
       return order == "desc" ? comp * -1 : comp;
     };
   };
+
   render() {
+    const RotateData = this.RotateValueHolder.interpolate({
+      inputRange: [0, 1],
+      outputRange: ["0deg", "180deg"]
+    });
     const labelStyle = {
       position: "absolute",
       color: "#74808E",
-      top:0,
+      top: 0,
       left: 15,
-      transform: [{ rotate: this.props.order === "asc" ? "180deg" : "0deg" }]
+      transform: [{ rotate: RotateData }]
     };
     return (
       <View
         style={{
           ...styles.CompanyDetails,
           padding: 0,
-        
+          height: 250,
           position: "absolute",
-          bottom: 0,
-          backgroundColor: "#d1d5db"
+          bottom: 0
         }}
       >
         <View
           style={{
             height: 40,
-            borderBottomWidth: .3,
+            borderBottomWidth: 0.3,
             borderBottomColor: "#74808E"
           }}
         />
+        <Animated.View           style={labelStyle}
+>
         <Ionicons
           size={40}
           color={"#F08080"}
           name={this.state.iconName}
-          style={labelStyle}
           onPress={this.handlePassword}
         />
+        </Animated.View>
         <PickerIOS
-          itemStyle={{}}
+          itemStyle={{ color: "white" }}
           selectedValue={this.state.selectedKey}
-          onValueChange={value => {this.setState({ selectedKey: value }),this.handleSort()}}
+          onValueChange={value => {
+            this.setState({ selectedKey: value }), this.handleSort();
+          }}
         >
           {this.state.keys.map((keySelection, i) => (
             <PickerItemIOS key={i} value={keySelection} label={keySelection} />
@@ -107,8 +128,7 @@ class Filter extends React.Component {
           style={{
             position: "absolute",
             top: 0,
-            right: 15,
-          
+            right: 15
           }}
           onPress={() => {
             this.props.doCloseFilterModal(), this.handleSort();

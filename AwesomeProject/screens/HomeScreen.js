@@ -22,7 +22,9 @@ class HomeScreen extends React.Component {
       password: ""
     };
   }
+componentDidMount=()=>{
 
+}
   handleLoading = () => {
     return (
       <View style={{ paddingHorizontal: 60 }}>
@@ -111,6 +113,9 @@ const mapStateToProps = state =>
 const mapDispatchToProps = dispatch => ({
   doLogin: (email, password) => {
     dispatch(actions.login(email, password));
+  },
+  doClear:()=>{
+    dispatch(actions.clear())
   }
 });
 export default connect(

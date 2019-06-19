@@ -9,7 +9,7 @@ const initialState = {
   companyModalVisible: false,
   filterModalVisible: false,
   dateModalVisible: false,
-  order:'asc'
+  order: "asc"
 };
 export default (companyReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -38,10 +38,14 @@ export default (companyReducer = (state = initialState, action) => {
         ...state,
         companyModalVisible: false
       };
+    case actionTypes.CLEAR:
+      return {
+        state
+      };
     case actionTypes.SET_ORDER:
       return {
         ...state,
-       order:state.order==='asc'?'desc':'asc'
+        order: state.order === "asc" ? "desc" : "asc"
       };
     case actionTypes.OPEN_COMPANY_MODAL:
       return {

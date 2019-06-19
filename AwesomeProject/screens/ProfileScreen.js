@@ -138,7 +138,7 @@ class LinksScreen extends React.Component {
 
                 <View
                   style={{
-                    flexDirection: "row",
+                    flexDirection: "row", height:30,
                     alignItems: "center"
                   }}
                 >
@@ -166,7 +166,7 @@ class LinksScreen extends React.Component {
                 >
                   <View
                     style={{
-                      flexDirection: "row",
+                      flexDirection: "row", height:30,
                       alignItems: "center"
                     }}
                   >
@@ -191,7 +191,7 @@ class LinksScreen extends React.Component {
                 </TouchableOpacity>
                 <View
                   style={{
-                    flexDirection: "row",
+                    flexDirection: "row", height:30,
                     alignItems: "center"
                   }}
                 >
@@ -215,7 +215,7 @@ class LinksScreen extends React.Component {
                 </View>
                 <View
                   style={{
-                    flexDirection: "row",
+                    flexDirection: "row", height:30,
                     alignItems: "center"
                   }}
                 >
@@ -240,7 +240,7 @@ class LinksScreen extends React.Component {
 
                 <View
                   style={{
-                    flexDirection: "row",
+                    flexDirection: "row", height:30,
                     alignItems: "center"
                   }}
                 >
@@ -323,6 +323,7 @@ const mapDispatchToProps = dispatch => ({
   signOut: () => {
     dispatch(actions.logout());
   },
+  
   openDateModal: () => {
     dispatch(actions.openDateModal());
   }

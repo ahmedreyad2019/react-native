@@ -4,7 +4,6 @@ export const styles = {
     backgroundColor: "#3D4858",
     shadowColor: "#000",
     width: "90%",
-    height: 150,
     borderRadius: 20,
     shadowOpacity: 0.7,
     shadowRadius: 3,

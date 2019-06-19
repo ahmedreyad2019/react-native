@@ -78,10 +78,16 @@ export const openDateModal = () => {
     type: types.OPEN_DATE_MODAL
   };
 };
-
+export const clear = () => {
+  return {
+    type: types.CLEAR
+  };
+};
 export const logout = () => {
   return dispatch => {
-    AsyncStorage.removeItem("jwt");
+    dispatch(setCompanies(""));
+    dispatch(setRequests(""));
+    AsyncStorage.getAllKeys().then(AsyncStorage.multiRemove);
     dispatch({ type: types.LOGOUT });
   };
 };
@@ -96,49 +102,55 @@ export const login = (email, password) => {
   return dispatch => {
     dispatch(loading(true));
 
-    fetch("https://serverbrogrammers.herokuapp.com/api/investors/login", {
-      method: "POST",
-      body: JSON.stringify({ email: email, password: password }),
-      headers: {
-        "Content-Type": "application/json"
-      }
-    }).then(response => {
-      response.json().then(data => {
-        if (data.auth) {
-          AsyncStorage.setItem("jwt", data.token);
-          AsyncStorage.getItem("jwt").then(res => {
-            console.log(res);
+    AsyncStorage.getAllKeys()
+      .then(AsyncStorage.multiRemove)
+      .then(
+        fetch("https://serverbrogrammers.herokuapp.com/api/investors/login", {
+          method: "POST",
+          body: JSON.stringify({ email: email, password: password }),
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }).then(response => {
+          response.json().then(data => {
+            if (data.auth) {
+              AsyncStorage.setItem("jwt", data.token);
+              AsyncStorage.getItem("jwt").then(res => {
+                console.log(res);
+              });
+              dispatch(setToken(data.token, data.id));
+            } else dispatch(setError(true));
+            dispatch(loading(false));
           });
-          dispatch(setToken(data.token, data.id));
-        } else dispatch(setError(true));
-        dispatch(loading(false));
-      });
-    });
+        })
+      );
   };
 };
 
-export const fetchCompanies = token => {
+export const fetchCompanies = () => {
   return dispatch => {
     dispatch(loading(true));
-    axios
-      .get(
-        `http://serverbrogrammers.herokuapp.com/api/investors/View/ViewCompanies`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Headers": "x-access-token",
-            "x-access-token": token
-          }
-        }
-      )
 
-      .then(res => {
-        dispatch(setCompanies(res.data.data));
-        dispatch(loading(false));
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    AsyncStorage.getItem("jwt").then(token =>
+      axios
+        .get(
+          `http://serverbrogrammers.herokuapp.com/api/investors/View/ViewCompanies`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Headers": "x-access-token",
+              "x-access-token": token
+            }
+          }
+        )
+        .then(res => {
+          dispatch(setCompanies(res.data.data));
+          dispatch(loading(false));
+        })
+        .catch(error => {
+          console.log(error);
+        })
+    );
   };
 };
 export const fetchAllCompanies = () => {
@@ -156,26 +168,30 @@ export const fetchAllCompanies = () => {
       });
   };
 };
-export const fetchRequests = token => {
+export const fetchRequests = () => {
   return dispatch => {
     dispatch(loading(true));
-    fetch(
-      `http://serverbrogrammers.herokuapp.com/api/investors/MyRequests/all`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "x-access-token": token
-        }
-      }
-    )
-      .then(response => response.json())
-      .then(response => {
-        dispatch(setRequests(response.data));
-      })
-      .catch(error => {
-        dispatch(error(error));
-      });
+
+    AsyncStorage.getItem("jwt").then(token =>
+      axios
+        .get(
+          `http://serverbrogrammers.herokuapp.com/api/investors/MyRequests/all`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Headers": "x-access-token",
+              "x-access-token": token
+            }
+          }
+        )
+        .then(res => {
+          dispatch(setRequests(res.data.data));
+          dispatch(loading(false));
+        })
+        .catch(error => {
+          console.log(error);
+        })
+    );
   };
 };
 export const fetchProfile = (userId, token) => {

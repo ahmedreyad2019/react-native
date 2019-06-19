@@ -3,6 +3,7 @@ import { View, DatePickerIOS, TouchableOpacity, Text } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import * as actions from "../actions/index";
 import { connect } from "react-redux";
+import { styles } from "../styles";
 
 class DatePicker extends Component {
   constructor(props) {
@@ -11,25 +12,28 @@ class DatePicker extends Component {
   }
 
   render() {
+      
     return (
       <View style={{ flex: 1, flexDirection: "column-reverse" }}>
-        <View
+       <View
+        style={{
+          ...styles.CompanyDetails,
+          padding: 0,height:250,
+          position: "absolute",
+          bottom: 0,
+        }}
+      >
+                 <View
           style={{
-            backgroundColor: "#d1d5db"
+            height: 40,
+            borderBottomWidth: .3,
+            borderBottomColor: "#74808E"
           }}
-        >
-          <View
-            style={{
-              height: 30,
-              backgroundColor: "#fff",
-              borderBottomWidth: 1,
-              borderBottomColor: "#74808E",
-              borderTopWidth: 2
-            }}
-          />
+        />
           <DatePickerIOS
             mode={"date"}
             date={new Date(this.props.user.dob)}
+            style={{color:'white'}}
             onDateChange={newDate => this.setState({ chosenDate: newDate })}
           />
 

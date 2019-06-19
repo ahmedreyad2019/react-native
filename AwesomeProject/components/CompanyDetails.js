@@ -21,6 +21,7 @@ class CompanyDetails extends React.Component {
             fontFamily: "AvenirNext-DemiBold"
           }}
         >
+          
            {this.props.selectedCompany.nameInEnglish} ({this.props.selectedCompany.nameInArabic})
         </Text>
        
